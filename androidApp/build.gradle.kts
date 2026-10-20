@@ -13,7 +13,7 @@ android {
     ndkVersion = "29.0.14206865"
 
     defaultConfig {
-        applicationId = "com.inspiredandroid.kai"
+        applicationId = "com.inspiredandroid.kai.hybrid"
         minSdk =
             libs.versions.android.minSdk
                 .get()
@@ -26,7 +26,7 @@ android {
             libs.versions.android.versionCode
                 .get()
                 .toInt()
-        versionName = libs.versions.appVersion.get()
+        versionName = libs.versions.appVersion.get() + "-hybrid.4"
     }
 
     flavorDimensions += "distribution"

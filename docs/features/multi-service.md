@@ -1,6 +1,6 @@
 # Multi-Service
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai supports 31 LLM providers (plus a built-in Free tier). Each provider uses one of three API formats: **OpenAI-compatible** (most services), **Gemini native**, or **Anthropic native** -- plus **LiteRT on-device** for local inference. A handful of OpenAI models additionally require OpenAI's **Responses API**; Kai switches to it per model, transparently. Users can configure multiple service instances, reorder them, and Kai automatically falls back through the chain on failure.
 
@@ -162,7 +162,7 @@ Selecting a non-Free entry reorders the configured list so the chosen service be
 
 ## Attachments
 
-Image attachments are broadly supported across cloud services, gated on **two levels**. The built-in **Free** tier is text-only at the service level — its proxy fans out to a chain that includes text-only fallback models, so it never accepts images regardless of the nominal model. Beyond that, image support is **per-model**: **DeepSeek** has no vision models, so images are dropped for it everywhere (including when it's reached through an aggregator), and services that host both text-only and vision models in one catalog (e.g. **Z.AI**, where the text GLM models sit next to the multimodal GLM-V variants) accept images only when the selected model is vision-capable. When the active service or model can't take images, images are dropped from the request — and the file picker stops offering image types — so a turn that includes an image still goes through as text. Unknown models are assumed image-capable, since most modern flagship models are multimodal. PDF attachments are advertised only by services with native document support — currently Anthropic, Gemini, OpenAI, and OpenRouter. Anthropic and Gemini encode PDFs natively in the request; the OpenAI-compatible wire path currently drops PDF binaries (images still go through as `image_url`), so a PDF chosen while OpenAI or OpenRouter is active is accepted by the UI but not sent to the model. The on-device Local Model hides file attachment affordances entirely; users running purely locally don't see attachment buttons.
+Image attachments are broadly supported across cloud services, gated on **two levels**. The built-in **Free** tier is text-only at the service level — its proxy fans out to a chain that includes text-only fallback models, so it never accepts images regardless of the nominal model. Beyond that, image support is **per-model**: **DeepSeek** allows the verified Flash vision aliases, while its chat/reasoner/pro text families still drop images, and services that host both text-only and vision models in one catalog (e.g. **Z.AI**, where the text GLM models sit next to the multimodal GLM-V variants) accept images only when the selected model is vision-capable. When the active service or model can't take images, images are dropped from the request — and the file picker stops offering image types — so a turn that includes an image still goes through as text. Unknown models are assumed image-capable, since most modern flagship models are multimodal. PDF attachments are advertised only by services with native document support — currently Anthropic, Gemini, OpenAI, and OpenRouter. Anthropic and Gemini encode PDFs natively in the request; the OpenAI-compatible wire path currently drops PDF binaries (images still go through as `image_url`), so a PDF chosen while OpenAI or OpenRouter is active is accepted by the UI but not sent to the model. Kai Hybrid offers local photo attachments on Android with the verified Gemma 4 E2B IT bundle; other local paths keep attachments hidden. Photo conversations stay local unless the user explicitly switches to a cloud vision provider. See [photo input](photo-input.md).
 
 ## Settings UI
 
@@ -173,6 +173,14 @@ Users manage services through the settings screen:
 - **Configure** — per-instance API key, model selection, base URL (OpenAI-Compatible only; optional custom model id via checkbox)
 - **Free fallback toggle** — controls whether Free is appended as last resort
 - **Sponsors** — the Free tier card lists all GitHub sponsors in a single grid, with active sponsors first followed by past sponsors
+
+## Kai Hybrid consultation
+
+This personal Android fork adds an opt-in DeepSeek consultation for local chat. The local model can ask for text-only advice, or the user can explicitly start a question with `/deepseek`. Only the selected question and context are sent; the full conversation, memory store, and local system prompt are not automatically uploaded. The app marks cloud-assisted answers. Adding DeepSeek as a service does not by itself enable consultation.
+
+The per-turn limit is one cloud attempt, 6,000 input characters, 2,048 generated tokens, and 45 seconds. The adviser has no tools and cannot recursively delegate or execute actions. Failures do not trigger a retry or a different cloud provider. Consultations use non-thinking mode to reserve the bounded output for the answer.
+
+When Local Model is primary, automatic background checks default to local inference and cannot initiate consultation. An explicitly selected model for a scheduled job still takes precedence. The free cloud fallback is off by default in this fork. See [DeepSeek consultation](deepseek-consultation.md).
 
 ## Key Files
 

@@ -2,6 +2,7 @@ package com.inspiredandroid.kai.inference
 
 import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Capabilities
+import com.google.ai.edge.litertlm.Content
 import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Engine
@@ -10,6 +11,8 @@ import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.OpenApiTool
 import com.google.ai.edge.litertlm.SamplerConfig
 import com.google.ai.edge.litertlm.tool
+import com.inspiredandroid.kai.Platform
+import com.inspiredandroid.kai.currentPlatform
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.size
@@ -46,6 +49,7 @@ import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 
 class LiteRTInferenceEngine : LocalInferenceEngine {
+    override val supportsImageInput = currentPlatform is Platform.Mobile.Android
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var downloadJob: Job? = null
@@ -133,12 +137,16 @@ class LiteRTInferenceEngine : LocalInferenceEngine {
                     throw InsufficientMemoryException()
                 }
 
+                val capabilities = cachedModelCapabilities(model.filePath)
+                println("LiteRT: capabilities vision=${capabilities?.supportsVision} tools=${capabilities?.supportsFunctionCalling}")
                 fun initWithBackend(backend: Backend, maxTokens: Int?): Engine {
                     val config = EngineConfig(
                         modelPath = model.filePath,
                         backend = backend,
                         cacheDir = getModelCacheDirectory(),
                         maxNumTokens = maxTokens,
+                        visionBackend = if (supportsImageInput && capabilities?.supportsVision == true) Backend.GPU() else null,
+                        maxNumImages = if (supportsImageInput && capabilities?.supportsVision == true) 1 else null,
                     )
                     val e = Engine(config)
                     e.initialize()
@@ -171,7 +179,7 @@ class LiteRTInferenceEngine : LocalInferenceEngine {
                 engine = newEngine
                 conversation = newEngine.createConversation()
                 currentModelId = model.id
-                currentModelCapabilities = cachedModelCapabilities(model.filePath)
+                currentModelCapabilities = capabilities
                 currentContextTokens = contextTokens
                 _engineState.value = EngineState.READY
             } catch (e: CancellationException) {
@@ -302,13 +310,23 @@ class LiteRTInferenceEngine : LocalInferenceEngine {
 
             val lastUserIndex = messages.indexOfLast { it.role == "user" }
             if (lastUserIndex < 0) throw IllegalStateException("No user message found")
+            if (messages.any { it.images.isNotEmpty() } && (!supportsImageInput || currentModelCapabilities?.supportsVision != true)) {
+                throw IllegalArgumentException("This local model does not support photos. Choose a vision-capable local model.")
+            }
+            if (messages.any { it.images.isNotEmpty() }) println("LiteRT: local photo input images=${messages.sumOf { it.images.size }}")
+
+            fun contents(message: InferenceMessage): Contents = Contents.of(
+                buildList {
+                    add(Content.Text(sanitizeForLiteRt(message.content).orEmpty()))
+                    message.images.forEach { add(Content.ImageBytes(it)) }
+                },
+            )
 
             val sanitizedSystemPrompt = sanitizeForLiteRt(systemPrompt)
             val initialMessages = messages.subList(0, lastUserIndex).map { msg ->
-                val sanitized = sanitizeForLiteRt(msg.content) ?: ""
                 when (msg.role) {
-                    "user" -> Message.user(sanitized)
-                    else -> Message.model(sanitized)
+                    "user" -> Message.user(contents(msg))
+                    else -> Message.model(contents(msg))
                 }
             }
 
@@ -330,7 +348,7 @@ class LiteRTInferenceEngine : LocalInferenceEngine {
             val conv = currentEngine.createConversation(config)
             conversation = conv
 
-            val lastMessage = sanitizeForLiteRt(messages[lastUserIndex].content) ?: ""
+            val lastMessage = contents(messages[lastUserIndex])
             val response = try {
                 withTimeout(INFERENCE_TIMEOUT_MS.milliseconds) {
                     conv.sendMessage(lastMessage)

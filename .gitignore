@@ -26,3 +26,14 @@ fastlane/README.md
 .claude
 .opencode
 .grok/
+
+# Locally built test APKs
+dist/
+
+# Local credentials and Android signing keys
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+keystore.properties

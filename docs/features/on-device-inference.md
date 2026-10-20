@@ -1,6 +1,6 @@
 # On-Device Inference (LiteRT)
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai can run AI models directly on the user's device using Google's LiteRT LM SDK. This enables fully offline, private inference with no API key, no internet connection, and no cost. Available on **Android**, **Desktop** (macOS, Linux, Windows), and **iOS**.
 
@@ -24,7 +24,7 @@ Bumping a catalog model means updating its pinned revision, digest, and size tog
 
 | Model | Size | GPU Memory (Android) | Default Context | Max Context | Tool calling |
 |-------|------|---------------------|-----------------|-------------|--------------|
-| Gemma 4 E2B IT | 2.59 GB | 676 MB | 4K tokens | 32K tokens | ✅ reliable |
+| Gemma 4 E2B IT | 2.59 GB | 676 MB | 4K tokens | 32K tokens | Pinned bundle reports no native tool support; Hybrid uses a consultation router |
 | Gemma 4 E4B IT | 3.66 GB | 710 MB | 4K tokens | 32K tokens | ✅ reliable |
 | Gemma 4 12B IT | 6.88 GB | 4000 MB | 8K tokens | 32K tokens | ✅ reliable |
 | LFM2.5 1.2B Instruct | 736 MB | 300 MB | 4K tokens | 4K tokens (fixed) | ✅ tool template in the bundle |
@@ -48,7 +48,7 @@ Two filters decide what the model actually receives.
 
 The on-device tool allowlist currently exposes: `get_local_time`, `get_location_from_ip`, `web_search`, `open_url`, `memory_store`, `memory_forget`, `memory_reinforce`, and `execute_shell_command` (when the user has enabled the shell tool in Settings). Email tools, task scheduling (`schedule_task` / `list_tasks` / `cancel_task`), MCP server tools, structured `memory_learn`, heartbeat-config tools, and `promote_learning` are excluded — they require a remote model.
 
-**Qwen3 0.6B caveat:** at 0.6 B params it rarely emits valid function-call syntax — it tends to hallucinate answers (e.g. a fictional time) instead of invoking `get_local_time`. Treat Qwen3 as a chat-only model in practice; pick Gemma 4 E2B/E4B, or LFM2.5 1.2B where those are too large, for anything that relies on tools. Whether the capability gate above withholds tools from Qwen3 automatically depends on what its bundle declares; the caveat stands either way.
+**Qwen3 0.6B caveat:** at 0.6 B params it rarely emits valid function-call syntax — it tends to hallucinate answers (e.g. a fictional time) instead of invoking `get_local_time`. Treat Qwen3 as a chat-only model in practice. Tool availability depends on the downloaded bundle's declared capabilities. The pinned E2B bundle reported no native tool support in the S26 Ultra device test; Hybrid's separate consultation router works without enabling native action tools.
 
 The system prompt for on-device runs is composed from its own local-chat variant — it contains only the sections a small Gemma can handle (soul + basic memory guidance + runtime Context block). Memory categories, scheduled tasks, Structured Learning guidance, and kai-ui sections are never composed in.
 
@@ -66,7 +66,7 @@ If the engine throws (e.g. the model does emit malformed tool-call syntax that t
 
 ## Other limitations
 
-- **No image input** -- the on-device engine only accepts text messages. Some catalog bundles (Gemma 4 12B since its September 2026 revision) declare vision and audio modalities, and the capability read surfaces that, but nothing consumes it yet
+- **Photo input in Kai Hybrid on Android** -- the verified E2B bundle exposes JPEG/PNG/WebP attachment input with its native vision encoder. One latest photo is retained for follow-ups. Other local runtime/model combinations remain text-only in the UI. See [photo input](photo-input.md).
 - **No dynamic UI** -- kai-ui prompts are skipped for on-device runs (the schema is too large for the native template parser)
 - **Not available on web** -- the WASM build returns no local engine. iOS uses a platform-specific LiteRT bridge rather than the Android/JVM AAR.
 - **Requires a 64-bit device (Android)** -- the LiteRT-LM AAR only ships `arm64-v8a` and `x86_64` native libraries. On pure 32-bit devices (armeabi-v7a), the LiteRT service card is hidden; the app still works with remote services.
@@ -117,7 +117,15 @@ When the last LiteRT service instance is removed, all downloaded and imported mo
 
 - LiteRT instances participate in the normal fallback chain
 - On unsupported platforms (web), LiteRT instances are silently skipped
-- Background tool runs (heartbeat and scheduled tasks) use an explicitly chosen instance when there is one, otherwise prefer remote services and fall back to on-device only when no remote is configured. The on-device fallback works at any context size, since the simple-tool allowlist has no schema-overhead penalty.
+- Background tool runs (heartbeat and scheduled tasks) use an explicitly chosen instance when there is one. Otherwise, Hybrid keeps them local when Local Model is primary; with a remote primary it prefers configured remote services and falls back to local. Background runs never receive the DeepSeek consultation interface.
+
+## Kai Hybrid consultation
+
+This personal Android fork adds an opt-in DeepSeek consultation for local chat. The local model can ask for text-only advice, or the user can explicitly start a question with `/deepseek`. Only the selected question and context are sent; the full conversation, memory store, and local system prompt are not automatically uploaded. The app marks cloud-assisted answers. Adding DeepSeek as a service does not by itself enable consultation.
+
+The per-turn limit is one cloud attempt, 6,000 input characters, 2,048 generated tokens, and 45 seconds. The adviser has no tools and cannot recursively delegate or execute actions. Failures do not trigger a retry or a different cloud provider. Consultations use non-thinking mode to reserve the bounded output for the answer.
+
+When Local Model is primary, automatic background checks default to local inference and cannot initiate consultation. An explicitly selected model for a scheduled job still takes precedence. The free cloud fallback is off by default in this fork. See [DeepSeek consultation](deepseek-consultation.md).
 
 ## Key Files
 

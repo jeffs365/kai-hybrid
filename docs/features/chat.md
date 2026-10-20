@@ -1,6 +1,6 @@
 # Chat & Conversations
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai's chat system manages the message history, conversation persistence, file attachments, and speech output. Conversations are service-independent — switching providers does not affect which conversation is loaded or restored. Multiple conversations are persisted and browsable via a history sheet.
 
@@ -64,6 +64,8 @@ Auto-derived from the first user message when a conversation is saved for the fi
 
 ## File Attachments
 
+Kai Hybrid adds [local photo input](photo-input.md) on Android with Gemma 4 E2B IT. The attachment button accepts JPEG, PNG, and WebP; an image-only send requests a description. Photo answers and follow-ups stay on-device with the latest photo retained. Cloud-capable providers show an upload notice before an attached photo is sent.
+
 Multiple files can be attached to a single prompt. Each file is added one at a time via the file picker or drag-and-drop, and appears as a chip below the input. Clicking a chip removes that specific file from the queue. All queued files are cleared after the prompt is sent. Three categories of files are supported:
 
 ### Images
@@ -72,7 +74,7 @@ Multiple files can be attached to a single prompt. Each file is added one at a t
 - Maximum raw input size: 50 MB; maximum size after compression: 15 MB — rejected with a size error if exceeded
 - Sent as `image_url` (OpenAI-compatible), `image` block (Anthropic), or `inline_data` (Gemini)
 - Not offered on the built-in Free service (its proxy fans out to text-only fallback models that reject multimodal content) or on 1min.AI
-- Also hidden when the active model is known to be text-only (e.g. DeepSeek chat models, GLM text models), even on services that otherwise accept images
+- Also hidden when the active model is known to be text-only (e.g. DeepSeek chat/reasoner or GLM text models), even on services that otherwise accept images. The verified DeepSeek Flash vision aliases are allowed.
 - Shown as a preview thumbnail (max 200dp wide) inside the user message bubble
 - Clicking the thumbnail opens a full-screen viewer with pinch-to-zoom, double-tap to toggle zoom, pan when zoomed, and a close button in the top-right (also dismissable via the Android back button or by tapping the backdrop; desktop has no keyboard shortcut for dismissal)
 
@@ -91,7 +93,7 @@ Multiple files can be attached to a single prompt. Each file is added one at a t
 - Shown as a filename chip in the user message bubble
 
 ### General behavior
-- The attachment button is shown whenever the active service supports file attachments (text files work with all remote models); it is hidden when the active service runs on-device, since on-device services do not support attachments
+- The attachment button is shown whenever the active service supports file attachments (text files work with all remote models). In Kai Hybrid, Android E2B also offers local photo input; other local model/runtime combinations keep attachments hidden.
 - Unsupported file types (e.g., `.zip`) show an error message
 - Files exceeding the per-category size limit show a size error; size is checked by stat before the file is read, so multi-gigabyte attachments are rejected without allocating memory for the full contents
 - Long filenames in chips are truncated with an ellipsis while preserving the extension

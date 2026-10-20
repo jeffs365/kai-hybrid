@@ -167,6 +167,24 @@ data class ServiceInstance(
 
 class AppSettings(internal val settings: Settings) {
 
+    fun getBraveSearchApiKey(): String = settings.getString("brave_search_api_key", "")
+
+    fun setBraveSearchApiKey(key: String) {
+        if (key.isBlank()) settings.remove("brave_search_api_key") else settings.putString("brave_search_api_key", key.trim())
+    }
+
+    fun isBraveSearchAutomatic(): Boolean = settings.getBoolean("brave_search_automatic", false)
+
+    fun setBraveSearchAutomatic(enabled: Boolean) {
+        settings.putBoolean("brave_search_automatic", enabled)
+    }
+
+    fun isDeepSeekConsultationEnabled(): Boolean = settings.getBoolean("deepseek_consultation_enabled", false)
+
+    fun setDeepSeekConsultationEnabled(enabled: Boolean) {
+        settings.putBoolean("deepseek_consultation_enabled", enabled)
+    }
+
     // App open tracking
     fun trackAppOpen(): Int {
         val currentCount = settings.getInt(KEY_APP_OPENS, 0)
@@ -225,7 +243,7 @@ class AppSettings(internal val settings: Settings) {
     }
 
     // Free fallback
-    fun isFreeFallbackEnabled(): Boolean = settings.getBoolean(KEY_FREE_FALLBACK_ENABLED, true)
+    fun isFreeFallbackEnabled(): Boolean = settings.getBoolean(KEY_FREE_FALLBACK_ENABLED, false)
 
     fun setFreeFallbackEnabled(enabled: Boolean) {
         settings.putBoolean(KEY_FREE_FALLBACK_ENABLED, enabled)

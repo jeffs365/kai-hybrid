@@ -1,10 +1,12 @@
 # Tools
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai's tools feature allows the AI to execute external functions during conversations — web search, notifications, calendar events, shell commands, memory operations, and more. Tools are defined with a schema, executed with safety guards, and managed through per-tool toggles in settings.
 
 ## Concepts
+
+Kai Hybrid also adds an app-managed [Brave Web Search](brave-search.md) path. Its key is entered in Settings → Tools → Web Search · Brave. Use `/search` for manual searches; opt into automatic local routing with Search automatically. Search summaries stay local and include source links, with one search per visible turn.
 
 ### Tool
 
@@ -306,6 +308,8 @@ The interactive-mode top bar shows only the static title — loading is surfaced
 | `composeApp/src/commonMain/.../tools/CommonTools.kt` | Common tool implementations and the cross-platform definition list |
 | `composeApp/src/commonMain/.../tools/AgentToolSet.kt` | Shared gating every platform's available-tools list is built from |
 | `composeApp/src/commonMain/.../tools/WebSearchTool.kt` | `web_search` |
+| `composeApp/src/commonMain/.../tools/BraveSearchTool.kt` | App-managed Brave search |
+| `composeApp/src/commonMain/.../ui/settings/BraveSearchSettings.kt` | Brave key field and automatic search control |
 | `composeApp/src/commonMain/.../tools/FetchUrlTool.kt` | `fetch_url` with private-address and redirect checks |
 | `composeApp/src/commonMain/.../tools/SchedulingTools.kt` | `schedule_task`, `list_tasks`, `cancel_task` |
 | `composeApp/src/commonMain/.../tools/HeartbeatTools.kt` | `promote_learning` |

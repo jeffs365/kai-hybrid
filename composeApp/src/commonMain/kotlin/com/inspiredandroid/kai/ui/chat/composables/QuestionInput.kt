@@ -58,6 +58,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.inspiredandroid.kai.Platform
 import com.inspiredandroid.kai.currentPlatform
+import com.inspiredandroid.kai.data.Service
 import com.inspiredandroid.kai.data.ServiceEntry
 import com.inspiredandroid.kai.data.imageExtensions
 import com.inspiredandroid.kai.skills.SkillManifest
@@ -130,6 +131,15 @@ fun QuestionInput(
         }
 
         if (files.isNotEmpty()) {
+            if (files.any { it.extension.lowercase() in imageExtensions }) {
+                val provider = availableServices.firstOrNull()
+                val notice = if (provider?.let { Service.fromId(it.serviceId).isOnDevice } == true) {
+                    "Photo stays on this phone · One photo at a time"
+                } else {
+                    "Photo will be sent to ${provider?.serviceName ?: "the selected provider"} when you send."
+                }
+                Text(notice, modifier = Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.bodySmall)
+            }
             FlowRow(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -169,8 +179,9 @@ fun QuestionInput(
 
         fun submitQuestion() {
             val text = textState.text
-            if (text.isNotBlank()) {
-                ask(text.trim())
+            if (text.isNotBlank() || files.isNotEmpty()) {
+                val defaultQuestion = if (files.any { it.extension.lowercase() in imageExtensions }) "Describe the attached photo." else "Summarize the attached file."
+                ask(text.trim().ifBlank { defaultQuestion })
                 onTextStateChange(TextFieldValue(""))
             }
         }
@@ -252,7 +263,7 @@ fun QuestionInput(
                     }
                     if (isLoading) {
                         TrailingIcon(icon = Res.drawable.ic_stop, onClick = cancel, isPulsing = true)
-                    } else if (textState.text.isNotBlank()) {
+                    } else if (textState.text.isNotBlank() || files.isNotEmpty()) {
                         TrailingIcon(icon = Res.drawable.ic_up, onClick = { submitQuestion() })
                     }
                 }
@@ -269,6 +280,7 @@ fun QuestionInput(
                         onClick = { filePickerLauncher.launch() },
                         modifier = Modifier.padding(start = 7.dp),
                         tint = MaterialTheme.colorScheme.onBackground,
+                        contentDescription = "Attach photo or file",
                     )
                 }
             } else {
@@ -378,6 +390,7 @@ internal fun CircleIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    contentDescription: String? = null,
 ) {
     Box(
         modifier = modifier
@@ -390,7 +403,7 @@ internal fun CircleIconButton(
         Icon(
             imageVector = icon,
             modifier = Modifier.size(24.dp),
-            contentDescription = null,
+            contentDescription = contentDescription,
             tint = tint,
         )
     }

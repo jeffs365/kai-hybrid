@@ -28,6 +28,7 @@ class ToolDefinitionsTest {
             CommonTools.openUrlTool,
             WebSearchTool,
             FetchUrlTool,
+            BraveSearchTool(false, ""),
         )
         val missing = stateless.map { it.schema.name }.filterNot { it in definitionIds }
         assertTrue(missing.isEmpty(), "Executable tools with no ToolInfo (chat shows the raw id): $missing")

@@ -21,6 +21,8 @@ data class LocalModel(
     val isRecommended: Boolean = false,
     /** True for user-imported models that are not in [MODEL_CATALOG]. */
     val isImported: Boolean = false,
+    /** Picker hint for verified catalog bundles; the runtime capability is checked at send time. */
+    val supportsImages: Boolean = false,
 )
 
 enum class DevicePerformance {
@@ -63,6 +65,7 @@ enum class EngineState {
 data class InferenceMessage(
     val role: String,
     val content: String,
+    val images: List<ByteArray> = emptyList(),
 )
 
 /**
@@ -129,6 +132,7 @@ enum class DownloadError {
 }
 
 interface LocalInferenceEngine {
+    val supportsImageInput: Boolean get() = false
     val engineState: StateFlow<EngineState>
     val downloadingModelId: StateFlow<String?>
     val downloadProgress: StateFlow<Float?>

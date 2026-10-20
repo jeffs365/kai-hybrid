@@ -355,7 +355,7 @@ class ChatViewModel(
             return
         }
         _state.update {
-            it.copy(files = (it.files + file).toImmutableList())
+            it.copy(files = (if (dataRepository.currentService().isOnDevice) listOf(file) else it.files + file).toImmutableList())
         }
     }
 

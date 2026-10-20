@@ -9,7 +9,12 @@ data class OpenAICompatibleChatRequestDto(
     val messages: List<Message>,
     val model: String? = null,
     val tools: List<Tool>? = null,
+    @SerialName("max_tokens") val maxTokens: Int? = null,
+    val thinking: Thinking? = null,
 ) {
+    @Serializable
+    data class Thinking(val type: String)
+
     @Serializable
     data class Message(
         val role: String, // "system", "user", "assistant", "tool"

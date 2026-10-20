@@ -242,6 +242,8 @@ object CommonTools {
     // declaration, so the Tools tab skips them instead of drawing a switch nothing reads.
     // They still belong here: without a definition, chat falls back to showing the raw tool id.
     val commonToolDefinitions = listOf(
+        DeepSeekConsultationTool.INFO,
+        BraveSearchTool.INFO,
         WebSearchTool.toolInfo,
         localTimeToolInfo,
         ipLocationToolInfo,

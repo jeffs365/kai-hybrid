@@ -40,8 +40,8 @@ internal fun supportsTools(modelId: String): Boolean {
  * then poisons every later turn in the chat (the image stays in history), so we strip images.
  *
  * Exact match only: the vision variants (glm-4.6v, glm-4v-plus, …) share a prefix with the text
- * ones (glm-4.6, glm-4), so prefix matching would wrongly flag them as text-only. DeepSeek, which
- * has no vision models at all, is matched by family prefix in [modelSupportsImages] instead.
+ * ones (glm-4.6, glm-4), so prefix matching would wrongly flag them as text-only. DeepSeek's
+ * known vision aliases are handled separately in [modelSupportsImages].
  */
 internal val TEXT_ONLY_IMAGE_MODELS: Set<String> = setOf(
     // GLM / Zhipu text models. The -v / v-plus variants are multimodal and are
@@ -81,15 +81,15 @@ internal val TEXT_ONLY_IMAGE_MODELS: Set<String> = setOf(
  * flagship models are multimodal, and stripping images from a model that supports them is a
  * worse failure than leaving the rare unknown text-only model to reject them.
  *
- * DeepSeek is matched by family prefix: its chat API has no vision models at all, so this also
- * covers DeepSeek reached through an aggregator and any future DeepSeek id. GLM is matched
+ * DeepSeek's verified Flash vision aliases are allowed; other non-VL DeepSeek ids remain
+ * conservative, including text-only models reached through aggregators. GLM is matched
  * exactly via [TEXT_ONLY_IMAGE_MODELS] because its vision variants share a prefix with the text ones.
  */
 internal fun modelSupportsImages(modelId: String): Boolean {
     val key = modelId.substringAfterLast('/').lowercase()
-    // DeepSeek's chat models are all text-only; the lone vision family is DeepSeek-VL, which
-    // carries "vl" in the id. Match the text family by prefix so this also covers DeepSeek via
-    // aggregators and future ids, while leaving DeepSeek-VL recognised as multimodal.
+    // Official Vision documentation now supports the Flash alias and the retired vision-exp
+    // alias (served by current Flash). Do not assume every DeepSeek model has gained vision.
+    if (key in setOf("deepseek-flash", "deepseek-v4-flash-vision-exp")) return true
     if (key.startsWith("deepseek") && !key.contains("vl")) return false
     return key !in TEXT_ONLY_IMAGE_MODELS
 }

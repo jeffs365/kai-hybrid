@@ -106,8 +106,40 @@ actual val isSplinterlandsSupported: Boolean = true
 actual suspend fun compressImageBytes(bytes: ByteArray, mimeType: String): ByteArray {
     if (!mimeType.startsWith("image/")) return bytes
     return try {
-        val bitmap = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return bytes
         val maxDim = 1024
+        val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+        var sample = 1
+        while (maxOf(bounds.outWidth, bounds.outHeight) / sample > maxDim * 2) sample *= 2
+        val options = android.graphics.BitmapFactory.Options().apply { inSampleSize = sample }
+        val decoded = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options) ?: return bytes
+        val orientation = runCatching {
+            android.media.ExifInterface(java.io.ByteArrayInputStream(bytes)).getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION, android.media.ExifInterface.ORIENTATION_NORMAL)
+        }.getOrDefault(android.media.ExifInterface.ORIENTATION_NORMAL)
+        val matrix = android.graphics.Matrix().apply {
+            when (orientation) {
+                android.media.ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> postScale(-1f, 1f)
+
+                android.media.ExifInterface.ORIENTATION_ROTATE_180 -> postRotate(180f)
+
+                android.media.ExifInterface.ORIENTATION_FLIP_VERTICAL -> postScale(1f, -1f)
+
+                android.media.ExifInterface.ORIENTATION_TRANSPOSE -> {
+                    postRotate(90f)
+                    postScale(-1f, 1f)
+                }
+
+                android.media.ExifInterface.ORIENTATION_ROTATE_90 -> postRotate(90f)
+
+                android.media.ExifInterface.ORIENTATION_TRANSVERSE -> {
+                    postRotate(270f)
+                    postScale(-1f, 1f)
+                }
+
+                android.media.ExifInterface.ORIENTATION_ROTATE_270 -> postRotate(270f)
+            }
+        }
+        val bitmap = if (matrix.isIdentity) decoded else android.graphics.Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true).also { decoded.recycle() }
         val scaled = if (bitmap.width > maxDim || bitmap.height > maxDim) {
             val scale = maxDim.toFloat() / maxOf(bitmap.width, bitmap.height)
             val newWidth = (bitmap.width * scale).toInt()

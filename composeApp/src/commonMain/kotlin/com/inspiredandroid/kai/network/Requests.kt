@@ -6,7 +6,6 @@ import com.inspiredandroid.kai.Version
 import com.inspiredandroid.kai.currentPlatform
 import com.inspiredandroid.kai.data.Service
 import com.inspiredandroid.kai.httpClient
-import com.inspiredandroid.kai.isDebugBuild
 import com.inspiredandroid.kai.network.dtos.anthropic.AnthropicChatRequestDto
 import com.inspiredandroid.kai.network.dtos.anthropic.AnthropicChatResponseDto
 import com.inspiredandroid.kai.network.dtos.anthropic.AnthropicModelsResponseDto
@@ -154,19 +153,9 @@ class Requests {
             socketTimeoutMillis = 180.seconds.inWholeMilliseconds
         }
         install(Logging) {
-            if (isDebugBuild) {
-                logger = DebugKtorLogger()
-                level = LogLevel.BODY
-            } else {
-                logger = Logger.EMPTY
-                level = LogLevel.NONE
-            }
-        }
-    }
-
-    class DebugKtorLogger : Logger {
-        override fun log(message: String) {
-            println("[KTOR] $message")
+            // This personal test build handles real API keys and private consultation text.
+            logger = Logger.EMPTY
+            level = LogLevel.NONE
         }
     }
 
@@ -259,6 +248,8 @@ class Requests {
         customHeaders: Map<String, String> = emptyMap(),
         sessionId: String? = null,
         requestTimeoutMs: Long? = null,
+        maxTokens: Int? = null,
+        disableThinking: Boolean = false,
     ): Result<OpenAICompatibleChatResponseDto> = try {
         val apiKey = getApiKeyOrThrow(service, credentials)
         val model = credentials.modelId.ifEmpty { null }
@@ -275,6 +266,8 @@ class Requests {
                         messages = messages,
                         model = model,
                         tools = tools.toRequestTools { it.toRequestTool() },
+                        maxTokens = maxTokens,
+                        thinking = if (disableThinking) OpenAICompatibleChatRequestDto.Thinking("disabled") else null,
                     ),
                 )
             }

@@ -36,6 +36,7 @@ val MODEL_CATALOG = listOf(
         maxContextTokens = 32_768,
         kvPerTokenBytes = 50_000,
         isRecommended = true,
+        supportsImages = true,
     ),
     LocalModel(
         id = "gemma-4-e4b-it",

@@ -1,0 +1,146 @@
+{
+  "base": "Kai v3.3.0 / 78bbb326095ccdb4723a55120f9ae5cd5c869c7c",
+  "app_id": "com.inspiredandroid.kai.hybrid",
+  "version": "3.3.0-hybrid.4",
+  "apk_sha256": "769f3c417924e3dad6ce9152ee4f7314bce729fed7738e99051acfa788dfcb08",
+  "android_build": "passed",
+  "formatting": "passed",
+  "tests": [
+    {
+      "name": "AppSettingsExportImportTest[desktop]",
+      "tests": "48",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsTest[desktop]",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalPhotoInputTest[desktop]",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhotoModelCapabilitiesTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolExecutorTest[desktop]",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalModelCatalogTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "BraveSearchToolTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekConsultationToolTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolDefinitionsTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "device_checks": {
+    "install": "passed",
+    "launch": "passed",
+    "settings_layout": "passed",
+    "explicit_cloud_disabled": "passed",
+    "local_model_reply": "passed in hybrid.2 with automatic search enabled: E2B returned 81 for 9x9; stayed local",
+    "automatic_tool_invocation": "DeepSeek live path passed in hybrid.1; hybrid.2 routing parser regression tests passed",
+    "live_deepseek_reply": "passed in hybrid.1; existing credentials and configuration preserved in hybrid.2",
+    "native_function_calling": "unavailable: pinned E2B bundle declares no support; native action tools remain withheld",
+    "explicit_cloud_missing_key": "passed: setup guidance, no cloud request",
+    "deepseek_configuration": "connected to deepseek-flash; consultation enabled; Local Model remains selected"
+  },
+  "total_tests": 101,
+  "cloud_limits": {
+    "attempts_per_turn": 1,
+    "input_characters": 6000,
+    "output_tokens": 2048,
+    "timeout_seconds": 45,
+    "thinking": "disabled",
+    "automatic_retries": 0
+  },
+  "device_model": "Samsung SM_S948B, Android SDK 37",
+  "apk_signature": "verified v2, one signer",
+  "live_validation_utc": "2026-10-20T10:40:12.136468+00:00",
+  "live_chat_consultations_tested": 2,
+  "brave_search": {
+    "settings_layout": "passed: masked key field visible under Tools",
+    "manual_missing_key": "passed: /search showed key setup guidance with no network call",
+    "automatic_routing": "passed: current Android bulletin lookup selected search and showed missing-key guidance",
+    "automatic_search_enabled_on_phone": true,
+    "web_search_tool_enabled_on_phone": true,
+    "live_search": "passed: manual /search and automatic lookup returned real Brave results, local E2B summaries and five source links",
+    "limits": {
+      "requests_per_turn": 1,
+      "query_characters": 600,
+      "query_words": 75,
+      "results": 5,
+      "network_timeout_seconds": 15,
+      "application_retries": 0
+    },
+    "summary_provider": "local E2B; no automatic DeepSeek synthesis",
+    "manual_live_test": "passed on hybrid.2: Samsung Galaxy S26 Ultra specifications query",
+    "automatic_live_test": "passed on hybrid.3: latest Google Android security bulletin lookup; router selected search",
+    "freshness_regression": "fixed: original answer selected an older March bulletin despite a newer official result; after date and source guidance, same question cited the October result (#4) correctly",
+    "live_chat_searches_tested": 3,
+    "observed_local_context_tokens": 12288,
+    "live_validation_utc": "2026-10-20T12:00:48.982304+00:00"
+  },
+  "photo_input": {
+    "platform": "Android",
+    "model": "gemma-4-e2b-it",
+    "native_vision_capability": true,
+    "observed_context_tokens": 12288,
+    "picker": "passed: selected synthetic PNG through Android document picker",
+    "image_only_send": "passed: default describe prompt sent actual image bytes",
+    "recognition": "recognized TEST CARD and 42; described red circles and blue square; description had an inconsistent count phrase",
+    "follow_up": "passed: replied Blue about the square without reattachment",
+    "local_request_images": 1,
+    "cloud_photo_calls_made": 0,
+    "automatic_cloud_and_search_in_photo_context": "disabled",
+    "latest_photo_retained": true,
+    "cloud_provider_path": "known DeepSeek Flash image aliases enabled and wire-tested; no live cloud photo request",
+    "formats": [
+      "jpg",
+      "jpeg",
+      "png",
+      "webp"
+    ],
+    "raw_input_limit_bytes": 50000000,
+    "processed_local_limit_bytes": 2000000,
+    "max_processed_dimension": 1024,
+    "validation_utc": "2026-10-20T12:29:13.497850+00:00"
+  }
+}

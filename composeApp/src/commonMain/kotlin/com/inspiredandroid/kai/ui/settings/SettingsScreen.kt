@@ -267,6 +267,7 @@ fun SettingsScreenContent(
                             }
 
                             SettingsTab.Services -> {
+                                DeepSeekConsultationSettings()
                                 ServicesContent(uiState = filteredUiState, actions = actions)
                             }
 
@@ -275,6 +276,7 @@ fun SettingsScreenContent(
                             }
 
                             SettingsTab.Tools -> {
+                                BraveSearchSettings()
                                 ToolsContent(
                                     tools = filteredUiState.tools,
                                     onToggleTool = actions.onToggleTool,
