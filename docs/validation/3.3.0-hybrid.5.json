@@ -1,0 +1,115 @@
+{
+  "base": "Kai v3.3.0 / 78bbb326095ccdb4723a55120f9ae5cd5c869c7c",
+  "previous_validated_baseline": "v3.3.0-hybrid.4",
+  "app_id": "com.inspiredandroid.kai.hybrid",
+  "version": "3.3.0-hybrid.5",
+  "apk_sha256": "48b5daea4667fe50c044933ae92482cd11fea17ed9dd27958576c0027d9c8f5e",
+  "apk_signature": "verified with apksigner; existing workstation debug key",
+  "android_build": "passed",
+  "formatting": "passed",
+  "tests": [
+    {
+      "name": "AppSettingsExportImportTest[desktop]",
+      "tests": "48",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsTest[desktop]",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatSystemPromptBuilderTest[desktop]",
+      "tests": "43",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalMemoryCommandsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalPhotoInputTest[desktop]",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhotoModelCapabilitiesTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolExecutorTest[desktop]",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalModelCatalogTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "BraveSearchToolTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekConsultationToolTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolDefinitionsTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 152,
+  "device_model": "Samsung SM_S948B, Android SDK 37",
+  "device_checks": {
+    "update_install": "passed: adb install -r, existing app data preserved",
+    "launch": "passed",
+    "memory_switch": "on before and after the update",
+    "empty_store_question": "passed: exact user question returned enabled but empty store",
+    "natural_language_save": "passed: Remember that ... saved a synthetic text note",
+    "restart_and_new_chat_recall": "passed: force-stopped and relaunched app, then E2B recalled synthetic code in a fresh chat",
+    "memory_list_after_restart": "passed: /memories returned the actual saved note",
+    "recall_router": "local; cloud=false",
+    "delete_test_note": "passed: /forget removed only the synthetic note",
+    "empty_store_after_cleanup": "passed: new chat memory question returned enabled but empty store",
+    "cloud_calls_made": 0
+  },
+  "memory_behavior": {
+    "storage": "existing settings-backed MemoryStore, on phone",
+    "explicit_user_requests_only": true,
+    "automatic_extraction_from_ordinary_chat": false,
+    "max_note_characters": 1000,
+    "local_prompt_memory_budget_characters": 2000,
+    "memory_off_guards": "automated tests passed: no read/write/delete; existing notes preserved",
+    "attachments": "commands return text-only guidance instead of saving photo/file contents",
+    "model_tool_support": "pinned E2B has no native function calling; app handles explicit text commands"
+  },
+  "live_validation_utc": "2026-10-20T14:45:41.719314+00:00"
+}

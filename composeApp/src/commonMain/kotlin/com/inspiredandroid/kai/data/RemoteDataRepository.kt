@@ -1064,6 +1064,22 @@ class RemoteDataRepository(
             }
         }
 
+        // The pinned E2B bundle cannot call memory tools. Handle only explicit requests
+        // from the current user message, before any inference or cloud/search routing.
+        if (currentService().isOnDevice) {
+            val memoryCommand = parseLocalMemoryCommand(question)
+            if (memoryCommand != null) {
+                val response = if (attachments.isNotEmpty()) {
+                    "Memory commands save text notes only. Send this request without an attachment."
+                } else {
+                    LocalMemoryCommands(appSettings, memoryStore).execute(memoryCommand)
+                }
+                chatHistory.update { it + History(role = History.Role.ASSISTANT, content = response) }
+                saveCurrentConversation()
+                return
+            }
+        }
+
         if (currentService().isOnDevice && attachments.any { it.mimeType.startsWith("image/") } && (BraveSearchTool.explicitQuery(question) != null || DeepSeekConsultationTool.explicitQuestion(question) != null)) {
             chatHistory.update { it + History(role = History.Role.ASSISTANT, content = "Photos are analyzed locally in this build. Ask about this photo without /search or /deepseek. Those commands send text only.") }
             saveCurrentConversation()
@@ -1981,7 +1997,7 @@ class RemoteDataRepository(
         val memoryEnabled = appSettings.isMemoryEnabled()
         val schedulingEnabled = appSettings.isSchedulingEnabled()
 
-        val memoryInstructions = if (memoryEnabled) {
+        var memoryInstructions = if (memoryEnabled) {
             appSettings.getMemoryInstructions().ifEmpty { null }
         } else {
             null
@@ -2025,6 +2041,9 @@ class RemoteDataRepository(
             } else {
                 ""
             }
+        }
+        if (variant == SystemPromptVariant.CHAT_LOCAL && !localModelDeclaresTools(modelId)) {
+            memoryInstructions = if (memoryEnabled) LOCAL_MEMORY_GUIDANCE else LOCAL_MEMORY_DISABLED_GUIDANCE
         }
         val now = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()

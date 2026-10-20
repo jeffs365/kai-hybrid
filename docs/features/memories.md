@@ -1,6 +1,6 @@
 # Memories
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai's memory system allows the AI to learn and retain information across conversations. Memories are stored persistently, injected into every system prompt for context, and can be reinforced over time. Well-established memories can be promoted into permanent behavior (the soul/system prompt); the heartbeat surfaces candidates for promotion.
 
@@ -37,6 +37,23 @@ The process of graduating a well-reinforced memory into the permanent soul/syste
 
 ## Memory Lifecycle
 
+### Local chat in Kai Hybrid
+
+The pinned E2B bundle does not support native tool calling. In hybrid.5, the app handles direct text requests for memory before model inference or web/cloud routing:
+
+- **Save:** `Remember that I prefer concise answers`, `Remember my favorite color is blue`, or `/remember I prefer concise answers`.
+- **Choose or update a key:** `/remember reply-style = concise answers`.
+- **Read:** `what's in your memory`, `what do you remember about me`, or `/memories`. The answer comes from the actual saved store, including an explicit empty-store message.
+- **Delete:** `/forget reply-style`, using the exact key shown in the memory list. A missing or unknown key does not remove anything.
+
+These actions require the Memories switch to be on and work without loading the model or making network calls. Notes persist in the same store shown in Settings → Agent → Memories and are available in new chats. A note is limited to 1,000 characters. Saving identical text reuses its existing key; a key supplied by the user updates that entry. Saving or reading a note does not upload it to DeepSeek or Brave.
+
+Only direct user requests trigger these actions; model output, web excerpts, and photo contents cannot write notes through this path. Memory commands with an attachment ask the user to resend text only. Plain E2B chat does not automatically extract memories from every message. The model receives instructions describing app-managed memory rather than being told to call unavailable memory tools.
+
+The memory list shows up to 100 notes and points to Settings for a longer list. Local inference still receives at most 2,000 characters of stored notes, so saving a fact does not guarantee every stored fact fits in every model request. Natural recall can be fallible; `/memories` shows the actual store.
+
+### Native memory tools
+
 1. AI stores a memory using `memory_store` (general) or `memory_learn` (categorized)
 2. If a memory with the same key exists, it is updated
 3. On subsequent conversations, AI can reinforce memories that prove useful via `memory_reinforce`
@@ -56,13 +73,15 @@ For on-device (local) chat, the injected memory section is budgeted to a maximum
 
 ## Default Instructions
 
-Built-in memory instructions (included for every chat variant when memory is enabled) guide the AI to:
+Built-in memory instructions for models with native memory tools guide the AI to:
 
 - Proactively store important information (names, preferences, projects, goals) with `memory_store`
 - Use `memory_forget` for outdated or incorrect information
 - Avoid storing trivial or transient information
 
 For remote models only, an additional "Structured Learning" section tells the AI to categorize with `memory_learn` (Preference for corrections, Learning for successes, Error for resolutions) and to reinforce memories that produce good outcomes. On-device models don't get this section because `memory_learn` isn't exposed to them.
+
+Local bundles without native tool support instead receive guidance for the app-managed text commands, as described above.
 
 ## Settings UI
 
@@ -85,13 +104,14 @@ The memories section lives in Settings → Agent and contains:
 | `memory_reinforce` | Increment a memory's hit count |
 | `promote_learning` | Graduate a memory into the soul/system prompt and remove it from the store. Rides the scheduling switch (not the memory switch) and is callable from any conversation, not only heartbeat runs |
 
-`memory_store`, `memory_forget`, and `memory_reinforce` are also exposed to on-device models; `memory_learn` and `promote_learning` are not.
+`memory_store`, `memory_forget`, and `memory_reinforce` are also exposed to on-device models whose bundle declares native tool support; `memory_learn` and `promote_learning` are not. E2B uses the app-managed text path described above.
 
 ## Key Files
 
 | File | Purpose |
 |---|---|
 | `composeApp/src/commonMain/.../data/MemoryStore.kt` | Core storage, retrieval, reinforcement, deletion, categorization |
+| `composeApp/src/commonMain/.../data/LocalMemoryCommands.kt` | Explicit local text commands and accurate saved-memory responses |
 | `composeApp/src/commonMain/.../data/SettingsJson.kt` | Shared settings-backed JSON persistence: decode-or-default, encode-and-write, locked read-modify-write |
 | `composeApp/src/commonMain/.../data/AppSettings.kt` | Persistence layer for memories JSON and enable flag |
 | `composeApp/src/commonMain/.../data/RemoteDataRepository.kt` | Loads memories and memory instructions for the system prompt; on-device tool allowlist |

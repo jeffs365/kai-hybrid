@@ -1,6 +1,6 @@
 # System Prompts
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai has several distinct prompt-construction paths. Each one is built by a **pure function** with explicit inputs (no DI, no suspend, no resource loading, no clocks) and is covered by a unit-test suite so future edits don't silently break unrelated variations.
 
@@ -41,6 +41,8 @@ The on-device tool allowlist (`LOCAL_TOOL_ALLOWLIST` in `RemoteDataRepository.kt
 | `## Interactive UI Mode` | when the conversation is in interactive mode | never | Interactive mode flag (takes precedence over Dynamic UI) |
 
 **Memory budget for `CHAT_LOCAL`:** the four memory category sections share a combined char budget (`LOCAL_MEMORY_BUDGET_CHARS`, currently 2000 chars). Entries are appended in order (general → preferences → learnings → errors); the next entry that would push the combined size past the budget is dropped, and all subsequent entries are dropped too. Truncation happens at entry boundaries, never mid-entry. If no entries in a category fit, that category's header is not emitted either.
+
+In Kai Hybrid, local bundles without native tool support receive app-managed memory guidance instead of instructions to call unavailable memory tools. The prompt describes the direct save/list/delete commands and distinguishes an enabled but empty store from disabled memory. When memory is off, the prompt explicitly says persistence is off. See [memories](memories.md).
 
 **Why two variants:**
 

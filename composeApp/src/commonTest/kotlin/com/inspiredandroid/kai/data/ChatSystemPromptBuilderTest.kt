@@ -122,6 +122,33 @@ class ChatSystemPromptBuilderTest {
     // region CHAT_REMOTE — focused tests
 
     @Test
+    fun `local memory without native tools explains app commands and includes saved notes`() {
+        val out = build(
+            SystemPromptVariant.CHAT_LOCAL,
+            hasTools = false,
+            memoryInstructions = LOCAL_MEMORY_GUIDANCE,
+            generalMemories = listOf(memory("favorite-color", "blue")),
+        )
+        assertTrue("Persistent memory is enabled" in out)
+        assertTrue("/remember" in out)
+        assertTrue("favorite-color" in out && "blue" in out)
+        assertFalse("memory_store" in out)
+    }
+
+    @Test
+    fun `local memory off prompt describes disabled persistence without tools`() {
+        val out = build(
+            SystemPromptVariant.CHAT_LOCAL,
+            hasTools = false,
+            memoryEnabled = false,
+            memoryInstructions = LOCAL_MEMORY_DISABLED_GUIDANCE,
+        )
+        assertTrue("Persistent memory is off" in out)
+        assertFalse("## Your Memories" in out)
+        assertFalse("memory_store" in out)
+    }
+
+    @Test
     fun `CHAT_REMOTE default emits soul + Structured Learning + Automation + context`() {
         val out = build(SystemPromptVariant.CHAT_REMOTE)
         assertTrue(out.startsWith("You are Kai."))
