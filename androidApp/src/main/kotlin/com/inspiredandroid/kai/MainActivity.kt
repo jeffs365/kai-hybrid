@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.inspiredandroid.kai.data.AppSettings
 import com.inspiredandroid.kai.data.DataRepository
+import com.inspiredandroid.kai.data.ReminderDelivery
 import com.inspiredandroid.kai.data.ThemeMode
 import com.inspiredandroid.kai.ui.DarkColorScheme
 import com.inspiredandroid.kai.ui.LightColorScheme
@@ -101,6 +102,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+        get<ReminderDelivery>().refresh()
         // Re-assert the daemon every time the activity is brought to the foreground.
         // `onCreate`-only is not enough: aggressive OEM battery managers (MIUI,
         // EMUI/Huawei) sometimes kill the foreground service while the activity

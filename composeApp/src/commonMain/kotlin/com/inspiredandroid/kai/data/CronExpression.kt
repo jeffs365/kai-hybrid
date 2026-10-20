@@ -49,8 +49,9 @@ class CronExpression(expression: String) {
         // Search limit: ~2 years of minutes (enough for any cron)
         val maxIterations = 525960 // 365 * 2 * 24 * 60
         var iterations = 0
+        val lastYear = dt.year + 2
 
-        while (iterations < maxIterations) {
+        while (iterations < maxIterations && dt.year <= lastYear) {
             iterations++
 
             if (dt.date.month.ordinal + 1 !in months) {
@@ -130,6 +131,7 @@ class CronExpression(expression: String) {
                     part.startsWith("*/") -> {
                         val step = part.substringAfter("*/").toIntOrNull()
                             ?: throw IllegalArgumentException("Invalid step in cron field: $part")
+                        require(step in 1..(max - min + 1)) { "Invalid cron step" }
                         var i = min
                         while (i <= max) {
                             result.add(i)
@@ -138,14 +140,18 @@ class CronExpression(expression: String) {
                     }
 
                     part.contains("-") -> {
-                        val (start, end) = part.split("-").map { it.toInt() }
-                        result.addAll(start.coerceIn(min, max)..end.coerceIn(min, max))
+                        val bounds = part.split("-")
+                        require(bounds.size == 2) { "Invalid cron range" }
+                        val (start, end) = bounds.map { it.toInt() }
+                        require(start in min..max && end in start..max) { "Invalid cron range" }
+                        result.addAll(start..end)
                     }
 
                     else -> {
                         val value = part.toIntOrNull()
                             ?: throw IllegalArgumentException("Invalid cron field value: $part")
-                        if (value in min..max) result.add(value)
+                        require(value in min..max) { "Cron value out of range" }
+                        result.add(value)
                     }
                 }
             }

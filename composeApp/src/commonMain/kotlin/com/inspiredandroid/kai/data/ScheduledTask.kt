@@ -30,6 +30,8 @@ data class ScheduledTask(
      * Empty for HEARTBEAT-trigger tasks — those share the heartbeat-wide log instead.
      */
     val recentExecutions: List<TaskExecutionLogEntry> = emptyList(),
+    /** Delivered directly by Android, without running an AI prompt. */
+    val isReminder: Boolean = false,
 ) {
     val scheduledAt: Instant get() = Instant.fromEpochMilliseconds(scheduledAtEpochMs)
 }

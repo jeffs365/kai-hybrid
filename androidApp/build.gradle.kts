@@ -26,7 +26,7 @@ android {
             libs.versions.android.versionCode
                 .get()
                 .toInt()
-        versionName = libs.versions.appVersion.get() + "-hybrid.5"
+        versionName = libs.versions.appVersion.get() + "-hybrid.6"
     }
 
     flavorDimensions += "distribution"

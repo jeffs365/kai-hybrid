@@ -1,0 +1,159 @@
+{
+  "base": "Kai v3.3.0 / 78bbb326095ccdb4723a55120f9ae5cd5c869c7c",
+  "previous_validated_baseline": "v3.3.0-hybrid.5",
+  "app_id": "com.inspiredandroid.kai.hybrid",
+  "version": "3.3.0-hybrid.6",
+  "apk_sha256": "9da01a2a0a7bde7a81fd52f6f2fa307ad9eeccb5689185b8317ef2eeb98969c7",
+  "apk_signature": "apksigner verified; existing workstation debug key",
+  "android_build": "passed",
+  "formatting": "passed",
+  "tests": [
+    {
+      "name": "AppSettingsExportImportTest[desktop]",
+      "tests": "48",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsTest[desktop]",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatSystemPromptBuilderTest[desktop]",
+      "tests": "43",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "CronExpressionTest[desktop]",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalMemoryCommandsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalPhotoInputTest[desktop]",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalReminderCommandsTest[desktop]",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhotoModelCapabilitiesTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "TaskStoreMigrationTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolExecutorTest[desktop]",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalModelCatalogTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "BraveSearchToolTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekConsultationToolTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "SchedulingToolsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolDefinitionsTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 198,
+  "device_model": "Samsung SM_S948B, Android SDK 37",
+  "reminders": {
+    "explicit_user_text_only": true,
+    "one_time_and_cron": true,
+    "delivery": "Android AlarmManager RTC_WAKEUP, setExactAndAllowWhileIdle, immutable private broadcast PendingIntent",
+    "no_model_or_network_on_alarm_delivery": true,
+    "memory_and_cloud_credentials": "existing app data preserved; not accessed or copied",
+    "notification_permission": "enabled on phone",
+    "exact_alarm_permission": "enabled on phone",
+    "permission_gate": "live initial request returned Nothing was scheduled before alarm access was enabled",
+    "live_one_time_test": {
+      "killed_pid": "25128",
+      "test_reminder_id": "a6d89704-1ba9-4d39-b9e4-a8dd00d93f46",
+      "due_utc": "2026-10-20T15:10:05.237Z",
+      "process_termination_utc": "2026-10-20T15:09:25.328600+00:00",
+      "notification_seen_utc": "2026-10-20T15:10:36.448378+00:00",
+      "background_notification_delivered": true,
+      "receiver_pid": "27433",
+      "cron_reminder_id": "b63f9fec-279d-431d-9fb0-7a8ab7b7b298",
+      "recurring_notification_delivered": true,
+      "recurring_next_occurrence_verified": "2026-10-20T23:13 Asia/Manila",
+      "test_reminder_broadcasts_after_cancellation": 0,
+      "test_reminders_cancelled": true
+    },
+    "live_recurring_test": "notification observed; next occurrence advanced from 23:12 to 23:13 Asia/Manila; then cancelled",
+    "cancellation": "both fixtures deleted; no matching reminder broadcast intents or notifications remained",
+    "old_unsaved_requests": "not automatically recreated; user must request again with future times",
+    "clock_and_timezone": "phone local zone; explicitly past dates rejected; recurring schedules rebased on zone/time changes",
+    "restore": "boot, app replacement, permission grant and activity start re-register saved pending reminders",
+    "live_test_limitations": [
+      "No live device reboot or forced deep-Doze test",
+      "First observation timestamp is not the exact notification-post timestamp",
+      "Final rebuild only changes cron text formatting; native delivery path unchanged"
+    ],
+    "force_stop": "Android force-stop prevents delivery until app is opened again",
+    "platform_scope": "direct reminder delivery Android only; existing other-platform AI tasks unchanged",
+    "final_apk_smoke_test": "passed: new daily cron registered with correct literal fields and local date; then cancelled; /reminders confirmed no pending test reminders",
+    "test_fixture_count": 3,
+    "all_test_fixtures_removed": true
+  },
+  "validation_utc": "2026-10-20T15:15:18.435456+00:00"
+}

@@ -1,8 +1,35 @@
 # Tasks
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-10-20
 
 Kai's tasks feature enables the AI to schedule one-time or recurring actions for future execution. Tasks are created through AI tools, stored persistently, and executed automatically by a background scheduler that polls on a fixed interval.
+
+## Direct reminders in Kai Hybrid
+
+Hybrid.6 adds a separate Android delivery path for reminders requested while Local Model is selected. Requests are parsed and saved by the app before model inference, search, or cloud consultation. E2B does not need native tool calling, and no AI runs when a reminder fires.
+
+Supported examples:
+
+- **Remind me in 20 minutes to pay bills**, or put “in 20 minutes” after the message.
+- **Remind me at 10.50pm today about paying bills**.
+- **Remind me tomorrow at 9am to call Alex**.
+- **Remind me 2026-10-25 at 09:00 to call Alex**.
+- **Remind me every day at 9am to drink water**, or use weekday, weekend, or a full weekday name.
+- `/cron 0 9 * * 1-5 | Check calendar` for an explicit five-field recurring reminder.
+- **/reminders** lists pending reminders and their IDs.
+- **/cancel-reminder ID** cancels a reminder; a unique first eight characters of its ID also works. Reminders can also be deleted in Settings → Agent → Scheduled Tasks.
+
+The confirmation includes the saved date/time, phone timezone, recurrence, and ID, and appears only after Android accepts the alarm. Missing time/message, unsupported wording, invalid cron, explicitly past dates, disabled scheduling, missing permissions, or registration failure produce an explanation without a success confirmation. A bare clock time that already passed today means the next occurrence tomorrow; an explicit “today” is never silently moved. Requests with attachments ask for text only.
+
+Direct reminders use the existing persistent task list with a separate delivery flag. The AI task poller skips them. Android delivers a local notification through a private receiver using a precise wakeup alarm, including while the app UI is closed or the device is asleep. A recurring reminder registers its next occurrence after delivery. Cancelled, completed, paused, or stale occurrences are rejected before delivery. Completed reminders and recent delivery outcomes remain visible in Scheduled Tasks.
+
+Setup requires Android notification permission, the Reminders notification channel, and Alarms & reminders special access. Kai requests notification permission and opens the app's alarm-access screen when needed; the user returns and resends the request after enabling access. Scheduled Tasks must remain enabled. Turning it off cancels registered reminders while preserving their stored entries.
+
+Saved reminders are re-registered when Kai opens, after an app update, and after device boot/unlock. Recurring local-time schedules are recalculated on clock/timezone changes. Android Settings → Force stop prevents delivery until Kai is opened again. A powered-off phone cannot notify; a missed saved reminder is picked up after restart/open. Android can throttle very frequent alarms while idle; this is not a guarantee for second-by-second or minute-by-minute background jobs.
+
+The app intercepts direct requests and instructs E2B not to promise unsupported scheduling. Common generated phrases such as “I'll remind you” are replaced by setup/usage guidance when no app-managed reminder was created. Earlier chat confirmations without a saved task are not recreated automatically.
+
+Android references: [alarm scheduling and restart behavior](https://developer.android.com/develop/background-work/services/alarms), [notification permission](https://developer.android.com/develop/ui/compose/notifications/notification-permission).
 
 ## Concepts
 
@@ -40,7 +67,7 @@ A 5-field schedule format (`minute hour day-of-month month day-of-week`) used fo
 
 - Task execution is skipped if the app is currently processing another API call
 - Due tasks run one after another; if a foreground chat request starts mid-cycle, the remaining tasks wait for the next poll
-- Task prompts run through the full tool-calling loop so the AI can use available tools (e.g. send notifications, call MCP servers). They always use the default model selection (first configured remote service, falling back to on-device) — the heartbeat model override does not apply. Tool calls are bound to the heartbeat conversation's session. When the response is non-blank it is appended to the heartbeat conversation (prefixed with the task description as a bold header) and the unread-heartbeat indicator is set, so scheduled output shares the same surface as heartbeat output without polluting the main chat history
+- Task prompts run through the full tool-calling loop so the AI can use available tools (e.g. send notifications, call MCP servers). They use the default model selection (Kai Hybrid prefers the primary Local Model before considering a remote service) — the heartbeat model override does not apply. Tool calls are bound to the heartbeat conversation's session. When the response is non-blank it is appended to the heartbeat conversation (prefixed with the task description as a bold header) and the unread-heartbeat indicator is set, so scheduled output shares the same surface as heartbeat output without polluting the main chat history
 - Results are stored as the task's last result for audit purposes, and each run is added to the task's recent-activity log
 - The scheduler also handles heartbeat checks, email polling, and (FOSS builds) SMS polling in the same poll loop. Email polling fetches headers in batches of up to 50 per account per poll and buffers them for the next heartbeat to pick up; no AI call runs during email or SMS polling itself
 
@@ -114,6 +141,14 @@ Consequences:
 When daemon mode is active (Android foreground service), the app process is kept alive, so the scheduler scope keeps polling — tasks execute on time without user interaction. When daemon mode is off, the scheduler still runs whenever the app is open; missed tasks fire on the next open.
 
 ## Key Files
+
+Direct-reminder additions:
+
+| File | Purpose |
+|---|---|
+| `composeApp/src/commonMain/.../data/LocalReminderCommands.kt` | Local request parsing, validation, confirmations, list/cancel, and generated-claim guard |
+| `composeApp/src/commonMain/.../data/ReminderDelivery.kt` | Platform delivery contract |
+| `composeApp/src/androidMain/.../data/ReminderDelivery.android.kt` | Exact alarms, notification receiver, restoration, and permissions |
 
 | File | Purpose |
 |---|---|

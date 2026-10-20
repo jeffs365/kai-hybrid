@@ -98,6 +98,13 @@ class CronExpressionTest {
     // ---- nextAfter ----
 
     @Test
+    fun invalidCronValuesAndZeroStepsAreRejectedWithoutLooping() {
+        for (expression in listOf("*/0 * * * *", "*/-1 * * * *", "99 9 * * *", "0 9 * * 8", "1-2-3 * * * *", "5-1 * * * *")) {
+            assertFailsWith<IllegalArgumentException> { CronExpression(expression) }
+        }
+    }
+
+    @Test
     fun `nextAfter daily 9am`() {
         val cron = CronExpression("0 9 * * *")
         // Before 9am same day → 9am same day

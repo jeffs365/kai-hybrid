@@ -201,6 +201,7 @@ class RemoteDataRepository(
     private val skillManager: SkillManager,
     private val sandboxController: SandboxController,
     private val localInferenceEngine: LocalInferenceEngine? = null,
+    private val reminderDelivery: ReminderDelivery = UnsupportedReminderDelivery(),
 ) : DataRepository {
 
     private val prettyJson = Json { prettyPrint = true }
@@ -695,7 +696,8 @@ class RemoteDataRepository(
         }
         val response = if (consultation?.lastError != null && !declaresTools) "${consultation.lastError}\n\n$result" else result
         if (photoContext) return "**On-device photo analysis**\n\n$response"
-        return consultation?.label(response) ?: response
+        val checked = if (history === chatHistory) guardLocalReminderClaim(response) else response
+        return consultation?.label(checked) ?: checked
     }
 
     /**
@@ -1061,6 +1063,20 @@ class RemoteDataRepository(
                         ),
                     )
                 }
+            }
+        }
+
+        if (currentService().isOnDevice) {
+            val reminder = parseReminderCommand(question)
+            if (reminder != null) {
+                val response = if (attachments.isNotEmpty()) {
+                    "Nothing was scheduled. Send reminder requests as text without an attachment."
+                } else {
+                    LocalReminderCommands(appSettings, taskStore, reminderDelivery).execute(reminder)
+                }
+                chatHistory.update { it + History(role = History.Role.ASSISTANT, content = response) }
+                saveCurrentConversation()
+                return
             }
         }
 
@@ -2045,6 +2061,9 @@ class RemoteDataRepository(
         if (variant == SystemPromptVariant.CHAT_LOCAL && !localModelDeclaresTools(modelId)) {
             memoryInstructions = if (memoryEnabled) LOCAL_MEMORY_GUIDANCE else LOCAL_MEMORY_DISABLED_GUIDANCE
         }
+        if (variant == SystemPromptVariant.CHAT_LOCAL) {
+            memoryInstructions = memoryInstructions.orEmpty() + "\n\n" + LOCAL_REMINDER_GUIDANCE
+        }
         val now = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()
         val localDateTime = now.toLocalDateTime(timeZone)
@@ -2136,11 +2155,13 @@ class RemoteDataRepository(
 
     override fun setSchedulingEnabled(enabled: Boolean) {
         appSettings.setSchedulingEnabled(enabled)
+        reminderDelivery.refresh()
     }
 
     override fun getScheduledTasks(): List<ScheduledTask> = taskStore.getAllTasks()
 
     override suspend fun cancelScheduledTask(id: String) {
+        reminderDelivery.cancel(id)
         taskStore.removeTask(id)
     }
 
@@ -2327,7 +2348,7 @@ class RemoteDataRepository(
     override fun importSettingsFromJson(json: String, sections: Set<ImportSection>, replace: Boolean): Int {
         val jsonObject = SharedJson.parseToJsonElement(json).jsonObject
         val toolIds = getPlatformToolDefinitions().map { it.id }
-        return appSettings.importFromJson(jsonObject, toolIds, sections, replace)
+        return appSettings.importFromJson(jsonObject, toolIds, sections, replace).also { reminderDelivery.refresh() }
     }
 
     override suspend fun askWithTools(prompt: String, instanceId: String?, conversationIdOverride: String?): String {

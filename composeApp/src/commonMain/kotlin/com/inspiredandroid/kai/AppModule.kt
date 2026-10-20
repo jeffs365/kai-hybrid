@@ -7,6 +7,7 @@ import com.inspiredandroid.kai.data.EmailStore
 import com.inspiredandroid.kai.data.HeartbeatManager
 import com.inspiredandroid.kai.data.MemoryStore
 import com.inspiredandroid.kai.data.NotificationStore
+import com.inspiredandroid.kai.data.ReminderDelivery
 import com.inspiredandroid.kai.data.RemoteDataRepository
 import com.inspiredandroid.kai.data.SmsDraftStore
 import com.inspiredandroid.kai.data.SmsStore
@@ -14,6 +15,7 @@ import com.inspiredandroid.kai.data.TaskScheduler
 import com.inspiredandroid.kai.data.TaskStore
 import com.inspiredandroid.kai.data.ToolExecutor
 import com.inspiredandroid.kai.data.createConversationPersistence
+import com.inspiredandroid.kai.data.createReminderDelivery
 import com.inspiredandroid.kai.data.runMigrations
 import com.inspiredandroid.kai.email.EmailPoller
 import com.inspiredandroid.kai.inference.createLocalInferenceEngine
@@ -76,6 +78,7 @@ val appModule = module {
     single<TaskStore> {
         TaskStore(get())
     }
+    single<ReminderDelivery> { createReminderDelivery(get(), get()) }
     single<EmailStore> {
         EmailStore(get())
     }
@@ -133,6 +136,7 @@ val appModule = module {
             skillManager = get(),
             sandboxController = get(),
             localInferenceEngine = createLocalInferenceEngine(),
+            reminderDelivery = get(),
         )
     }
     single<DataRepository> { get<RemoteDataRepository>() }

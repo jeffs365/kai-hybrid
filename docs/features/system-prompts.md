@@ -44,6 +44,8 @@ The on-device tool allowlist (`LOCAL_TOOL_ALLOWLIST` in `RemoteDataRepository.kt
 
 In Kai Hybrid, local bundles without native tool support receive app-managed memory guidance instead of instructions to call unavailable memory tools. The prompt describes the direct save/list/delete commands and distinguishes an enabled but empty store from disabled memory. When memory is off, the prompt explicitly says persistence is off. See [memories](memories.md).
 
+Local chat also receives app-managed reminder guidance: the model must not claim to schedule or cancel reminders itself. Direct requests are handled before inference and only a saved, registered reminder receives a success confirmation. Common unsupported scheduling promises generated during ordinary local chat are replaced with supported-format guidance. See [tasks](tasks.md#direct-reminders-in-kai-hybrid).
+
 **Why two variants:**
 
 - `CHAT_REMOTE` — full chat prompt for remote services. No limits.

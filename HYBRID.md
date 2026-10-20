@@ -4,11 +4,11 @@ Personal Android fork based on upstream Kai v3.3.0 (78bbb326). Apache-2.0 licens
 
 ## Saved baseline and future changes
 
-Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/local-deepseek-consultation`. The installed baseline is **3.3.0-hybrid.5**, tagged `v3.3.0-hybrid.5`. The earlier photo-enabled checkpoint remains tagged `v3.3.0-hybrid.4`.
+Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/local-deepseek-consultation`. The installed baseline is **3.3.0-hybrid.6**, tagged `v3.3.0-hybrid.6`. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
 
 Continue work from that branch. Read this file and the linked feature docs, make the change, run the relevant checks, then increment the Android hybrid version suffix and install the APK with `adb install -r`. Keep the same application ID and signing key to update the app while preserving its data. The upstream repository is available as the `upstream` remote for deliberate future merges.
 
-This repository backs up source code, feature notes, and the [validation record](docs/validation/3.3.0-hybrid.5.json). API keys, chat history, memory, and downloaded model weights remain in the app's storage on the phone; they are not backed up here. Built APKs are kept locally in `dist/` and ignored by Git.
+This repository backs up source code, feature notes, and the [validation record](docs/validation/3.3.0-hybrid.6.json). API keys, chat history, memory, and downloaded model weights remain in the app's storage on the phone; they are not backed up here. Built APKs are kept locally in `dist/` and ignored by Git.
 
 ## Build
 
@@ -26,6 +26,10 @@ Run `./gradlew spotlessCheck` separately from builds/tests, because the upstream
   --tests '*PhotoModelCapabilitiesTest' \
   --tests '*LocalMemoryCommandsTest' \
   --tests '*ChatSystemPromptBuilderTest' \
+  --tests '*LocalReminderCommandsTest' \
+  --tests '*CronExpressionTest' \
+  --tests '*TaskStoreMigrationTest' \
+  --tests '*SchedulingToolsTest' \
   --tests '*ToolExecutorTest' \
   --tests '*LocalModelCatalogTest' \
   --tests '*BraveSearchToolTest' \
@@ -55,7 +59,13 @@ With Local Model / Gemma 4 E2B IT selected on Android, tap the paperclip to atta
 
 Keep Settings → Agent → Memories on. Say `Remember that I prefer concise answers`, or use `/remember reply-style = concise answers` to choose a key. Ask `what's in your memory` or use `/memories` to read the actual saved notes. Use `/forget reply-style` to delete a note. These app-managed actions work locally even though the E2B bundle cannot call native memory tools. Saved notes persist across chats and restarts; ordinary conversation does not automatically save every fact. See [memory behavior](docs/features/memories.md).
 
+### Reminders (hybrid.6)
+
+With Local Model selected, say “Remind me in 20 minutes to pay bills” or “Remind me every day at 9am to drink water”. Enable Notifications and Alarms & reminders when prompted, then resend the request. A real confirmation includes the saved date/time and ID. Use /reminders to list reminders and /cancel-reminder ID to cancel one. Explicit cron is supported with /cron 0 9 * * 1-5 | message. Android posts the notification without loading E2B or calling a cloud API. See [reminder behavior and delivery limits](docs/features/tasks.md#direct-reminders-in-kai-hybrid). Earlier unsaved reminder promises must be requested again.
+
 ## Device validation
+
+Hybrid.6 passed the Android build, formatting check, and 198 selected tests. On the S26 Ultra, a one-minute reminder delivered its Android notification after the app was backgrounded and its process terminated. An explicit cron reminder delivered, advanced to its next minute, and was cancelled. Both test reminders were removed, with no matching broadcast intents or notifications left. Notifications and Alarms & reminders access are enabled. Device reboot and deep-Doze delivery were reviewed in code but were not live-tested. No cloud call was used to create or deliver these reminders.
 
 Hybrid.5 passed the Android build, formatting check, and 152 selected automated tests. On the S26 Ultra, an explicit natural-language request saved a synthetic memory. After an app restart and a new chat, E2B recalled the test fact correctly using its saved notes. The actual-memory list also showed the note after restart. The temporary note was then deleted. These checks made no cloud calls. The Memories switch remains on.
 

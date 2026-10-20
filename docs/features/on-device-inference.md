@@ -56,6 +56,8 @@ Interactive UI mode is **not supported** on-device: the kai-ui component schema 
 
 See [system-prompts.md](system-prompts.md) for the full contract.
 
+Kai Hybrid also handles direct reminder requests outside native model tools. One-time, daily/weekly, and explicit cron reminders are saved by the app and delivered through Android notifications without loading E2B when due. See [direct reminders](tasks.md#direct-reminders-in-kai-hybrid).
+
 ## Sampling
 
 Each conversation is configured with the sampling defaults the model's own bundle declares — top-k, top-p and temperature read from the same capability metadata as the tool declaration. Models converted from different upstream families want different values, so one hardcoded triple suits none of them exactly. A bundle that declares nothing reports zeroes, which mean *no opinion* rather than *decode greedily*; those fall back to Kai's previous fixed values (top-k 40, top-p 0.95, temperature 0.8).

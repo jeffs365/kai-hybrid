@@ -39,6 +39,7 @@ class TaskStore(appSettings: AppSettings) {
         scheduledAtEpochMs: Long,
         cron: String? = null,
         trigger: TaskTrigger = if (cron != null) TaskTrigger.CRON else TaskTrigger.TIME,
+        isReminder: Boolean = false,
     ): ScheduledTask {
         val now = Clock.System.now()
         val effectiveScheduledAt = when (trigger) {
@@ -65,6 +66,7 @@ class TaskStore(appSettings: AppSettings) {
             createdAtEpochMs = now.toEpochMilliseconds(),
             cron = cron,
             trigger = trigger,
+            isReminder = isReminder,
         )
         tasks.update { it + task }
         return task
@@ -103,7 +105,7 @@ class TaskStore(appSettings: AppSettings) {
     fun getDueTasks(): List<ScheduledTask> {
         val now = Clock.System.now().toEpochMilliseconds()
         return tasks.get().filter {
-            it.trigger != TaskTrigger.HEARTBEAT &&
+            !it.isReminder && it.trigger != TaskTrigger.HEARTBEAT &&
                 it.scheduledAtEpochMs <= now &&
                 it.status == TaskStatus.PENDING
         }
