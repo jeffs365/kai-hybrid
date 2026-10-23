@@ -26,6 +26,8 @@ private const val LOCAL_NETWORK_ENFORCEMENT_SDK = 37
  * [platformCanRequest] suppresses the launcher.
  */
 private fun permissionsFor(permission: AppPermission): Array<String> = when (permission) {
+    AppPermission.CAMERA -> arrayOf(Manifest.permission.CAMERA)
+
     AppPermission.CALENDAR -> arrayOf(
         Manifest.permission.READ_CALENDAR,
         Manifest.permission.WRITE_CALENDAR,

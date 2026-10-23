@@ -12,6 +12,9 @@ import kotlin.time.Duration.Companion.seconds
  * the other platforms answer from a fixed table in their [platformHasPermission] actual.
  */
 enum class AppPermission {
+    /** Android requires camera permission for the camera flash unit. */
+    CAMERA,
+
     /** Read *and* write access to the device calendar. */
     CALENDAR,
 

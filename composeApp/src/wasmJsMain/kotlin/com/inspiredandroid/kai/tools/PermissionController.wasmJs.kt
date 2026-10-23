@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 
 internal actual fun platformHasPermission(permission: AppPermission): Boolean = when (permission) {
     // Not implemented on web.
+    AppPermission.CAMERA,
     AppPermission.CALENDAR,
     AppPermission.POST_NOTIFICATIONS,
     AppPermission.READ_SMS,

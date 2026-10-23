@@ -1,6 +1,6 @@
 # On-Device Inference (LiteRT)
 
-**Last verified:** 2026-10-20
+**Last verified:** 2026-10-23
 
 Kai can run AI models directly on the user's device using Google's LiteRT LM SDK. This enables fully offline, private inference with no API key, no internet connection, and no cost. Available on **Android**, **Desktop** (macOS, Linux, Windows), and **iOS**.
 
@@ -152,3 +152,7 @@ When Local Model is primary, automatic background checks default to local infere
 | `composeApp/src/commonMain/.../network/NetworkExceptions.kt` | Maps inference failures, including a failed integrity check, to user-facing errors |
 | `composeApp/src/commonMain/.../ui/settings/ServicesSettings.kt` | LiteRT service card: model list, download/import controls, progress and error display |
 | `composeApp/src/commonMain/.../ui/settings/SettingsScreen.kt` | Hosts service settings including LiteRT model management |
+
+## Direct Android phone controls
+
+Kai Hybrid handles live battery/status and flashlight requests outside native model tool calling. E2B does not need to load for these requests. Flashlight results require Android camera-service state confirmation. See [phone controls](phone-controls.md).

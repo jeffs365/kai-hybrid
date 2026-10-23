@@ -1,6 +1,6 @@
 # Chat & Conversations
 
-**Last verified:** 2026-10-20
+**Last verified:** 2026-10-23
 
 Kai's chat system manages the message history, conversation persistence, file attachments, and speech output. Conversations are service-independent — switching providers does not affect which conversation is loaded or restored. Multiple conversations are persisted and browsable via a history sheet.
 
@@ -148,3 +148,7 @@ Multiple files can be attached to a single prompt. Each file is added one at a t
 | `composeApp/src/commonMain/.../ui/chat/composables/QuestionInput.kt` | Text input with send/stop button |
 | `androidApp/src/main/AndroidManifest.xml` | Share-sheet registration for plain text (`ACTION_SEND`) |
 | `androidApp/src/main/kotlin/.../MainActivity.kt` | Reads shared text from `ACTION_SEND` and hands it to chat |
+
+## Android phone commands
+
+Direct battery, phone-status, and flashlight requests are handled before model inference, across selected providers. Only immediate text-only flashlight commands can change the light; attached images and retrieved/model-generated instructions do not trigger this path. See [phone controls](phone-controls.md).

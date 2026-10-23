@@ -4,11 +4,11 @@ Personal Android fork based on upstream Kai v3.3.0 (78bbb326). Apache-2.0 licens
 
 ## Saved baseline and future changes
 
-Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/local-deepseek-consultation`. The installed baseline is **3.3.0-hybrid.6**, tagged `v3.3.0-hybrid.6`. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
+Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/local-deepseek-consultation`. The installed baseline is **3.3.0-hybrid.7**, tagged `v3.3.0-hybrid.7`. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
 
 Continue work from that branch. Read this file and the linked feature docs, make the change, run the relevant checks, then increment the Android hybrid version suffix and install the APK with `adb install -r`. Keep the same application ID and signing key to update the app while preserving its data. The upstream repository is available as the `upstream` remote for deliberate future merges.
 
-This repository backs up source code, feature notes, and the [validation record](docs/validation/3.3.0-hybrid.6.json). API keys, chat history, memory, and downloaded model weights remain in the app's storage on the phone; they are not backed up here. Built APKs are kept locally in `dist/` and ignored by Git.
+This repository backs up source code, feature notes, and the [validation record](docs/validation/3.3.0-hybrid.7.json). API keys, chat history, memory, and downloaded model weights remain in the app's storage on the phone; they are not backed up here. Built APKs are kept locally in `dist/` and ignored by Git.
 
 ## Build
 
@@ -30,6 +30,7 @@ Run `./gradlew spotlessCheck` separately from builds/tests, because the upstream
   --tests '*CronExpressionTest' \
   --tests '*TaskStoreMigrationTest' \
   --tests '*SchedulingToolsTest' \
+  --tests '*PhoneCommandsTest' \
   --tests '*ToolExecutorTest' \
   --tests '*LocalModelCatalogTest' \
   --tests '*BraveSearchToolTest' \
@@ -63,7 +64,13 @@ Keep Settings → Agent → Memories on. Say `Remember that I prefer concise ans
 
 With Local Model selected, say “Remind me in 20 minutes to pay bills” or “Remind me every day at 9am to drink water”. Enable Notifications and Alarms & reminders when prompted, then resend the request. A real confirmation includes the saved date/time and ID. Use /reminders to list reminders and /cancel-reminder ID to cancel one. Explicit cron is supported with /cron 0 9 * * 1-5 | message. Android posts the notification without loading E2B or calling a cloud API. See [reminder behavior and delivery limits](docs/features/tasks.md#direct-reminders-in-kai-hybrid). Earlier unsaved reminder promises must be requested again.
 
+### Phone controls (hybrid.7)
+
+Ask “What's my battery level?”, “Phone status”, “Turn on the flashlight”, or “Turn off the flashlight”. Manual forms are /battery, /phone status, and /flashlight on, off, or status. The app reads current Android data and verifies torch state through camera-service callbacks, without a model or cloud call for the command. The flashlight asks for camera permission; this feature does not capture photos or video. Settings → Tools has independent Phone battery, Phone status, and Phone flashlight switches. See [phone controls](docs/features/phone-controls.md).
+
 ## Device validation
+
+Hybrid.7 passed the Android build, formatting check, and 210 selected tests. It was installed over hybrid.6 without clearing app data. On the S26 Ultra, the battery percentage, charging state, and power source matched a nearby Android system reading. Phone status returned live storage, RAM, and Wi-Fi details. Flashlight status, on, off, and a fresh final status query all received Android camera-service confirmations. Camera permission is enabled and the flashlight was left off. No model or cloud call is needed for these direct commands. Busy-camera, permission-denial, and process-exit behavior were not live-tested; failure responses and tool switches are covered by automated tests.
 
 Hybrid.6 passed the Android build, formatting check, and 198 selected tests. On the S26 Ultra, a one-minute reminder delivered its Android notification after the app was backgrounded and its process terminated. An explicit cron reminder delivered, advanced to its next minute, and was cancelled. Both test reminders were removed, with no matching broadcast intents or notifications left. Notifications and Alarms & reminders access are enabled. Device reboot and deep-Doze delivery were reviewed in code but were not live-tested. No cloud call was used to create or deliver these reminders.
 

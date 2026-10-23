@@ -1,6 +1,6 @@
 # Kai 9000
 
-> This fork includes Kai Hybrid for Android: local Gemma 4 E2B, persistent memory, Android reminders, DeepSeek consultation, Brave search, and photo attachments. See [setup, validation, and continuation notes](HYBRID.md). The upstream project documentation follows below.
+> This fork includes Kai Hybrid for Android: local Gemma 4 E2B, persistent memory, Android reminders and phone controls, DeepSeek consultation, Brave search, and photo attachments. See [setup, validation, and continuation notes](HYBRID.md). The upstream project documentation follows below.
 
 <img src="https://img.shields.io/badge/Platform-Web-f7df1c?logo=javascript" alt="Web"> <img src="https://img.shields.io/badge/Platform-Android-34a853.svg?logo=android" alt="Android" /> <img src="https://img.shields.io/badge/Platform-iOS-lightgrey.svg?logo=apple" alt="iOS" /> <img src="https://img.shields.io/badge/Platform-Windows/macOS/Linux-e10707.svg?logo=openjdk" alt="Platform JVM" />
 <div align="center">

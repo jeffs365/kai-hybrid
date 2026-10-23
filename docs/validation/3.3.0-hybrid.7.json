@@ -1,0 +1,190 @@
+{
+  "base": "Kai v3.3.0 / 78bbb326095ccdb4723a55120f9ae5cd5c869c7c",
+  "previous_validated_baseline": "v3.3.0-hybrid.6",
+  "app_id": "com.inspiredandroid.kai.hybrid",
+  "version": "3.3.0-hybrid.7",
+  "apk_sha256": "220498ad54bcf13f53f34548e190210341453ff20d45aa7930d72a03f9341cdb",
+  "apk_signature": "apksigner verified; existing workstation debug key",
+  "android_build": "passed",
+  "formatting": "passed",
+  "tests": [
+    {
+      "name": "AppSettingsExportImportTest[desktop]",
+      "tests": "48",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsTest[desktop]",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatSystemPromptBuilderTest[desktop]",
+      "tests": "43",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "CronExpressionTest[desktop]",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalMemoryCommandsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalPhotoInputTest[desktop]",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalReminderCommandsTest[desktop]",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhoneCommandsTest[desktop]",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhotoModelCapabilitiesTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "TaskStoreMigrationTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolExecutorTest[desktop]",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalModelCatalogTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "BraveSearchToolTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekConsultationToolTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "SchedulingToolsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolDefinitionsTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 210,
+  "device_model": "Samsung SM-S948B, Android 17 / SDK 37",
+  "installation": "passed: adb install --no-streaming -r; installed versionName 3.3.0-hybrid.7",
+  "phone_controls": {
+    "direct_current_user_text_only": true,
+    "commands": [
+      "battery",
+      "phone status",
+      "flashlight on",
+      "flashlight off",
+      "flashlight status"
+    ],
+    "independent_tool_toggles": true,
+    "no_model_or_network_for_direct_commands": true,
+    "status_fields": [
+      "model",
+      "Android version",
+      "battery",
+      "internal data storage",
+      "available and total RAM",
+      "connection transport and internet validation"
+    ],
+    "flashlight_confirmation": "Camera service TorchCallback state, not setTorchMode acceptance alone",
+    "camera_scope": "CAMERA permission; no camera stream, photo capture or video recording",
+    "unknown_and_denied_states": "reported explicitly; not confirmed as successful",
+    "platform_scope": "Android only; unsupported stubs for other platforms",
+    "live_device_validation": "passed on 2026-10-23",
+    "process_exit_limit": "Android may turn off a torch enabled by a process when that process exits",
+    "credentials": "not accessed or copied; source scan found no credential-like matches",
+    "live_battery": {
+      "app_response": [
+        "Battery: 75%\nState: Charging\nPower source: USB\nTemperature: 35.8 \u00b0C\nBattery saver: Off",
+        "Read from Android at 2026-10-23T11:05:07.341348 (Asia/Manila)."
+      ],
+      "system_reading_nearby": {
+        "level": 75,
+        "scale": 100,
+        "status": "Charging",
+        "source": "USB",
+        "temperature_tenths_c": 364,
+        "utc": "2026-10-23T03:05:10.087164+00:00"
+      },
+      "comparison": "Battery percentage, charging state and power source matched. Temperature readings taken at different times."
+    },
+    "live_phone_status": [
+      "samsung SM-S948B \u00b7 Android 17",
+      "Battery: 76%\nState: Charging\nPower source: USB\nTemperature: 36.4 \u00b0C\nBattery saver: Off",
+      "Internal data storage: 294.2 GiB available of 458.5 GiB\nRAM: 2.9 GiB available of 10.8 GiB\nConnection: Wi-Fi \u00b7 internet validated by Android",
+      "Read from Android at 2026-10-23T11:05:39.443477 (Asia/Manila)."
+    ],
+    "live_flashlight": {
+      "initial_status": "off",
+      "on_response": "Flashlight is on.",
+      "off_response": "Flashlight is off.",
+      "final_status_query": "Flashlight is off.",
+      "camera_permission": "granted; USER_SET",
+      "final_state": "off",
+      "verification": "App response follows Android camera-service callback, including a fresh final state query. No separate physical LED measurement."
+    },
+    "live_test_limitations": [
+      "No forced busy-camera or permission-denial device test; unsupported and denied states covered in automated tests",
+      "No process-exit or background flashlight persistence device test"
+    ],
+    "existing_app_data": "Updated with install -r and the existing signing key; no app storage clearing or credential extraction"
+  },
+  "validation_utc": "2026-10-23T03:08:29.953926+00:00"
+}

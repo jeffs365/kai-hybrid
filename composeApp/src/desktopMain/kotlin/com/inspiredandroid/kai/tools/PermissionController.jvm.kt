@@ -9,6 +9,7 @@ internal actual fun platformHasPermission(permission: AppPermission): Boolean = 
     -> true
 
     // No SMS support on desktop.
+    AppPermission.CAMERA,
     AppPermission.READ_SMS,
     AppPermission.SEND_SMS,
     -> false

@@ -1,6 +1,6 @@
 # System Prompts
 
-**Last verified:** 2026-10-20
+**Last verified:** 2026-10-23
 
 Kai has several distinct prompt-construction paths. Each one is built by a **pure function** with explicit inputs (no DI, no suspend, no resource loading, no clocks) and is covered by a unit-test suite so future edits don't silently break unrelated variations.
 
@@ -92,3 +92,7 @@ Interactive UI mode is **not** available on on-device services — the kai-ui co
 | `composeApp/src/commonTest/.../data/ChatSystemPromptBuilderTest.kt` | Focused + golden tests for every chat variant section |
 | `composeApp/src/commonTest/.../data/HeartbeatPromptBuilderTest.kt` | Focused + golden tests for every heartbeat section |
 | `composeApp/src/commonTest/.../splinterlands/SplinterlandsTeamPickerPromptTest.kt` | Focused tests for the Splinterlands LLM picker |
+
+## App-managed phone controls
+
+Android chat receives guidance for direct battery/status and flashlight commands. The model must not invent fresh readings or claim hardware actions itself. Direct user requests are answered by the app before inference; common fabricated battery readings and flashlight-action claims in ordinary local replies are replaced with supported-command guidance. See [phone controls](phone-controls.md).

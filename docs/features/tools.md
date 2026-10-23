@@ -1,6 +1,6 @@
 # Tools
 
-**Last verified:** 2026-10-20
+**Last verified:** 2026-10-23
 
 Kai's tools feature allows the AI to execute external functions during conversations — web search, notifications, calendar events, shell commands, memory operations, and more. Tools are defined with a schema, executed with safety guards, and managed through per-tool toggles in settings.
 
@@ -344,3 +344,7 @@ The interactive-mode top bar shows only the static title — loading is surfaced
 | `composeApp/src/commonMain/.../ui/settings/SandboxSettings.kt` | Linux Sandbox settings card |
 | `composeApp/src/commonMain/.../ui/chat/composables/ToolMessage.kt` | Executing/completed UI indicators |
 | `composeApp/src/commonMain/.../data/AppSettings.kt` | Tool enabled state persistence |
+
+## Phone controls in Kai Hybrid
+
+Android exposes three independent switches under Tools: Phone battery, Phone status, and Phone flashlight. Direct current-user requests read live device data or change the flashlight with Android state confirmation. These app-managed controls run before inference and do not expose an arbitrary device-action interface to model output. See [phone controls](phone-controls.md).

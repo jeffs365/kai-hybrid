@@ -17,6 +17,7 @@ import com.inspiredandroid.kai.data.NotificationStore
 import com.inspiredandroid.kai.data.SmsDraftStore
 import com.inspiredandroid.kai.data.SmsStore
 import com.inspiredandroid.kai.data.TaskStore
+import com.inspiredandroid.kai.data.phoneToolDefinitions
 import com.inspiredandroid.kai.mcp.McpServerManager
 import com.inspiredandroid.kai.network.tools.Tool
 import com.inspiredandroid.kai.network.tools.ToolInfo
@@ -202,7 +203,7 @@ actual fun createLegacySettings(): Settings? {
 // ones no per-tool switch controls — chat resolves display names from here, and an omission shows
 // the raw tool id instead. Tools driven by a master toggle carry `userToggleable = false`, which
 // is what keeps them out of the Tools tab.
-actual fun getPlatformToolDefinitions(): List<ToolInfo> = CommonTools.commonToolDefinitions +
+actual fun getPlatformToolDefinitions(): List<ToolInfo> = CommonTools.commonToolDefinitions + phoneToolDefinitions +
     listOf(
         SendNotificationTool.toolInfo,
         CreateCalendarEventTool.toolInfo,

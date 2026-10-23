@@ -202,6 +202,7 @@ class RemoteDataRepository(
     private val sandboxController: SandboxController,
     private val localInferenceEngine: LocalInferenceEngine? = null,
     private val reminderDelivery: ReminderDelivery = UnsupportedReminderDelivery(),
+    private val phoneControls: PhoneControls = UnsupportedPhoneControls(),
 ) : DataRepository {
 
     private val prettyJson = Json { prettyPrint = true }
@@ -696,7 +697,12 @@ class RemoteDataRepository(
         }
         val response = if (consultation?.lastError != null && !declaresTools) "${consultation.lastError}\n\n$result" else result
         if (photoContext) return "**On-device photo analysis**\n\n$response"
-        val checked = if (history === chatHistory) guardLocalReminderClaim(response) else response
+        val checked = if (history === chatHistory) {
+            val reminderChecked = guardLocalReminderClaim(response)
+            if (phoneControls.supported) guardLocalPhoneClaims(reminderChecked) else reminderChecked
+        } else {
+            response
+        }
         return consultation?.label(checked) ?: checked
     }
 
@@ -1063,6 +1069,20 @@ class RemoteDataRepository(
                         ),
                     )
                 }
+            }
+        }
+
+        if (phoneControls.supported) {
+            val phoneCommand = parsePhoneCommand(question)
+            if (phoneCommand != null) {
+                val response = if (attachments.isNotEmpty()) {
+                    "Phone controls use live device state. Send a text-only request without an attachment."
+                } else {
+                    PhoneCommands(appSettings, phoneControls).execute(phoneCommand)
+                }
+                chatHistory.update { it + History(role = History.Role.ASSISTANT, content = response) }
+                saveCurrentConversation()
+                return
             }
         }
 
@@ -2063,6 +2083,9 @@ class RemoteDataRepository(
         }
         if (variant == SystemPromptVariant.CHAT_LOCAL) {
             memoryInstructions = memoryInstructions.orEmpty() + "\n\n" + LOCAL_REMINDER_GUIDANCE
+        }
+        if (phoneControls.supported) {
+            memoryInstructions = memoryInstructions.orEmpty() + "\n\n" + PHONE_CONTROL_GUIDANCE
         }
         val now = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()
