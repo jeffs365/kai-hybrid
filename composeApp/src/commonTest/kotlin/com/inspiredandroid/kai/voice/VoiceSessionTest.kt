@@ -28,6 +28,17 @@ class VoiceSessionTest {
         assertEquals("new", gate.complete(next, "b:deepseek", "new"))
     }
 
+    @Test fun offlineLanguageReadinessUsesTheReportedInstalledSupportedAndPendingLists() {
+        assertEquals(OfflineLanguageStatus.INSTALLED, offlineLanguageStatus("en-US", listOf("en_us"), emptyList(), emptyList()))
+        assertEquals(OfflineLanguageStatus.DOWNLOADABLE, offlineLanguageStatus("en-GB", listOf("en-US"), listOf("en-GB"), emptyList()))
+        assertEquals(OfflineLanguageStatus.DOWNLOADABLE, offlineLanguageStatus("fil-PH", listOf("en-US"), emptyList(), listOf("fil-PH")))
+    }
+
+    @Test fun unsupportedLocalesDoNotBorrowAnotherRegionsModelOrSuggestAFalseDownload() {
+        assertEquals(OfflineLanguageStatus.UNSUPPORTED, offlineLanguageStatus("en-PH", listOf("en-US"), listOf("en-GB"), emptyList()))
+        assertEquals(OfflineLanguageStatus.UNSUPPORTED, offlineLanguageStatus("fil-PH", listOf("en-US"), listOf("en-GB"), emptyList()))
+    }
+
     @Test fun engineChoiceIsDeviceLocalAndRestrictedToKnownEngines() {
         val backing = com.russhwolf.settings.MapSettings()
         val settings = com.inspiredandroid.kai.data.AppSettings(backing)

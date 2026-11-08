@@ -219,34 +219,104 @@
     },
     {
       "name": "VoiceSessionTest[desktop]",
-      "tests": "5",
+      "tests": "7",
       "failures": "0",
       "errors": "0",
       "skipped": "0"
     }
   ],
-  "total_tests": 334,
-  "apk_sha256": "f6d0a9241b8753c62a4a26c99b3f93690d405dfd6c8902674ec5459032788539",
+  "total_tests": 336,
+  "apk_sha256": "f8610cc6ca6a69b918e414062845f0d1a44507b9580e53265af05326564c22d4",
   "apk_bytes": 59997041,
   "signature": "apksigner verified; existing Kai debug signing key",
   "live_validation": {
-    "status": "pending USB reconnection",
+    "status": "partial device verification; human voice trial and final language-guard APK install pending",
     "connected_device": "Samsung S26 Ultra SM-S948B, Android 17/SDK 37",
     "installed_on_device_recognizer_configuration": "Google Android System Intelligence AiAiSpeechRecognitionService",
     "default_tts_at_audit": "com.samsung.SMT; global default not changed",
-    "offline_languages": "Not yet verified through runtime support API",
-    "microphone": "No permission granted or audio capture started by this work",
-    "final_kai_install": "Not attempted; phone offline",
-    "kokoro_prototype_install": "Transfer reported EOF and phone went offline; installation status unknown. Check before retry.",
+    "offline_languages": "Runtime support API confirms on-device recognizer available and en-US installed. en-PH and fil-PH are absent from installed, supported and pending language lists. No recording was used for this check.",
+    "microphone": "No audio capture or ADB permission grant performed. Asked owner to grant via actual mic button and test a spoken battery question; response pending.",
+    "final_kai_install": "hybrid.9 original voice APK installed in place with Success; installed base.apk SHA256 f6d0a9241b8753c62a4a26c99b3f93690d405dfd6c8902674ec5459032788539 verified. New unsupported-language handling compiled afterward; updated APK not yet installed because USB went offline.",
+    "kokoro_prototype_install": "Confirmed not installed on reconnect. Throttled transfer of prototype APK then lost USB with BrokenPipe before installation was invoked. Prototype benchmark deferred; no private reply was sent to it. A task-owned partial /data/local/tmp/kai-kokoro-prototype.apk needs cleanup after reconnect.",
     "kokoro_private_replies": "Disabled because published engine source logs speech input text. Fixed public benchmark only.",
     "pending_checks": [
-      "Installed APK hash/version and settings/composer visual review",
-      "Runtime installed offline language support",
-      "System local TTS metrics and prototype fixed-phrase benchmark",
-      "User-granted microphone and actual spoken transcript/reply trial",
-      "Cancel/lifecycle/audio focus on phone; extended conversational voice remains later work"
-    ]
+      "Human microphone/transcript/spoken-reply trial",
+      "Updated language-guard APK install and hash verification",
+      "Cancel/lifecycle/audio-focus device checks",
+      "Prototype fixed-phrase benchmark deferred; no Kokoro private chat acceptance"
+    ],
+    "recognition_diagnostics": {
+      "on_device_available": true,
+      "installed_on_device_languages": [
+        "en-US"
+      ],
+      "supported_on_device_languages": [
+        "de-DE",
+        "es-ES",
+        "fr-FR",
+        "it-IT",
+        "en-AU",
+        "en-GB",
+        "en-IE",
+        "en-SG",
+        "ja-JP",
+        "de-AT",
+        "de-BE",
+        "de-CH",
+        "en-CA",
+        "en-IN",
+        "es-US",
+        "fr-BE",
+        "fr-CA",
+        "fr-CH",
+        "hi-IN",
+        "id-ID",
+        "it-CH",
+        "ko-KR",
+        "pt-BR",
+        "th-TH",
+        "cmn-Hans-CN",
+        "cmn-Hant-TW",
+        "pl-PL",
+        "ru-RU",
+        "tr-TR",
+        "vi-VN"
+      ],
+      "pending_on_device_languages": [],
+      "summary": "On-device recognizer available. Installed languages: en-US. Live speech accuracy is not yet verified."
+    },
+    "system_voice_benchmark": {
+      "requested_engine": "system",
+      "voice": "en-gb-x-star13-local",
+      "offline_voice": true,
+      "initialization_ms": 63,
+      "samples": [
+        {
+          "sample": 0,
+          "first_synthesized_audio_ms": 91,
+          "total_synthesis_ms": 183,
+          "audio_seconds": 4.135541666666667,
+          "real_time_factor": 0.04425055162060593
+        },
+        {
+          "sample": 1,
+          "first_synthesized_audio_ms": 79,
+          "total_synthesis_ms": 171,
+          "audio_seconds": 3.561875,
+          "real_time_factor": 0.04800842253026847
+        },
+        {
+          "sample": 2,
+          "first_synthesized_audio_ms": 76,
+          "total_synthesis_ms": 143,
+          "audio_seconds": 2.504958333333333,
+          "real_time_factor": 0.05708677789051714
+        }
+      ],
+      "summary": "Offline synthesis completed. First audio: 91, 79, 76 ms. This measures synthesis, not audible response latency."
+    },
+    "ui_review": "Own empty-chat voice controls and Agent local-voice card observed; dark-theme settings screenshot confirms readable text and disabled Kokoro reply choice. Existing safe-agent and event cloud-sharing switches remained off."
   },
-  "validation_utc": "2026-11-08T14:04:02.569329+00:00",
+  "validation_utc": "2026-11-08T14:13:59.471155+00:00",
   "formatting": "spotlessCheck passed"
 }

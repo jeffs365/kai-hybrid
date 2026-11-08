@@ -22,3 +22,16 @@ class VoiceSession {
         return text.trim().takeIf { it.isNotBlank() && it.length <= 12_000 && it.none { c -> c.isISOControl() && c !in "\n\t" } }
     }
 }
+
+/** A locale must be explicitly reported; related English regions are not interchangeable. */
+enum class OfflineLanguageStatus { INSTALLED, DOWNLOADABLE, UNSUPPORTED }
+
+fun offlineLanguageStatus(selected: String, installed: List<String>, supported: List<String>, pending: List<String>): OfflineLanguageStatus {
+    fun key(value: String) = value.replace('_', '-').lowercase()
+    val target = key(selected)
+    return when {
+        installed.any { key(it) == target } -> OfflineLanguageStatus.INSTALLED
+        (supported + pending).any { key(it) == target } -> OfflineLanguageStatus.DOWNLOADABLE
+        else -> OfflineLanguageStatus.UNSUPPORTED
+    }
+}

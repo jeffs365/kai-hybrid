@@ -206,12 +206,18 @@ actual fun VoiceInputControl(enabled: Boolean, contextKey: String, replyAvailabl
 
                             return
                         }
-                        val installed = result.installedOnDeviceLanguages.map { it.replace('_', '-').lowercase() }
-                        if (language.lowercase() in installed) {
-                            listen()
-                        } else {
-                            needsDownload = true
-                            fail("Offline $language is not installed. Use Download language, then try again.")
+                        when (offlineLanguageStatus(language, result.installedOnDeviceLanguages, result.supportedOnDeviceLanguages, result.pendingOnDeviceLanguages)) {
+                            OfflineLanguageStatus.INSTALLED -> listen()
+
+                            OfflineLanguageStatus.DOWNLOADABLE -> {
+                                needsDownload = true
+                                fail("Offline $language is not installed. Use Download language, then try again.")
+                            }
+
+                            OfflineLanguageStatus.UNSUPPORTED -> {
+                                needsDownload = false
+                                fail("This phone's on-device recognizer does not support $language. Choose an installed language such as English (US). No network recognizer was used.")
+                            }
                         }
                     }
                     override fun onError(error: Int) {
