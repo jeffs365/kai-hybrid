@@ -216,6 +216,10 @@ class AgentRuntime(val settings: AppSettings, private val controls: PhoneControl
                         scope.failureCode = "inline_tool_text_rejected"
                         return@run "The model returned unsupported inline tool text. No action was performed."
                     }
+                    if (scope.observed.isEmpty() && parsePhoneCommand(question) != null) {
+                        scope.failureCode = "requested_tool_not_called"
+                        return@run "The model did not call a phone tool for this request. No phone action was performed and no current state was verified. Use /battery, /phone status, or /flashlight on, off or status for a direct command."
+                    }
                     return@run if (scope.observed.isNotEmpty()) {
                         "**DeepSeek agent**\n\n" + scope.observed.distinct().joinToString("\n\n") { it.content }
                     } else {

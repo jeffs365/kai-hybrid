@@ -20,6 +20,8 @@ Tasks run through one coordinator with at most eight reasoning rounds, eight cal
 
 Repeated provider call IDs with the same typed action reuse the prior result in that run. Reuse with a different action is rejected. Provider IDs, raw arguments and observations remain transient; persistent history contains host-generated identifiers and fixed metadata. After process death, unfinished records become interrupted; they are never automatically replayed. A crash between a hardware action and its completion record can leave the final state unknown. This is not a universal exactly-once guarantee.
 
+The app supplies a finite classification of the current direct request to the model, without inserting raw user text into that instruction. Earlier messages cannot substitute for a fresh measurement. If a recognized phone request produces no tool call, the task is recorded as failed and the app reports that no operation or current state was verified. It does not retry automatically or execute a fallback action.
+
 Android callbacks confirm flashlight state and results carry observation timestamps. An unavailable camera, missing permission, cancellation, timeout or rejected authorization cannot become a success result. Another app or Android can subsequently change the light; a snapshot does not continuously monitor it.
 
 ## Stop and review
@@ -47,6 +49,7 @@ Automated coverage includes actual DeepSeek-format response fixtures, call/resul
 | agent/AgentRuntime.kt in common source | Shared coordination, execution policy, deadlines and observed results |
 | agent/AgentToolRegistry.kt in common source | Finite schemas and strict argument validation |
 | agent/ToolPolicy.kt in common source | Host-side authorization |
+| agent/AgentPrompt.kt in common source | Current-turn guidance from deterministic host classification |
 | agent/AgentModelClient.kt in common source | Structured response adapter that separates reasoning from user text |
 | agent/ApprovalGate.kt in common source | Host-owned, expiring one-use review |
 | agent/AgentExecutionStore.kt in common source | Durable metadata, retention and interrupted-state recovery |

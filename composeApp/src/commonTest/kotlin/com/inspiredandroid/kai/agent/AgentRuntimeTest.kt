@@ -206,6 +206,27 @@ class AgentRuntimeTest {
         assertFalse("<tool_call>" in result)
     }
 
+    @Test fun recognizedPhoneRequestCannotSucceedWithOnlyAnUnverifiedModelAnswer() = runTest {
+        for (question in listOf("Turn on the flashlight", "Turn off the flashlight", "What is my battery level?", "Phone status")) {
+            val (runtime, controls) = setup()
+            val result = runtime.chat(question, emptyList(), AgentModelClient { AgentModelTurn("It's already off — no change made.") })
+            assertTrue("No phone action was performed" in result)
+            assertFalse("already off" in result)
+            assertEquals(0, controls.reads)
+            assertTrue(controls.calls.isEmpty())
+            assertTrue(runtime.store.entries.value.any { it.kind == "run" && it.status == ExecutionStatus.FAILED && it.errorCode == "requested_tool_not_called" })
+        }
+    }
+
+    @Test fun currentRequestGuidanceDistinguishesTheUserTargetFromPriorOrGeneratedInstructions() {
+        assertTrue("state on now" in safeAgentGuidance("Turn on the flashlight"))
+        assertTrue("state off now" in safeAgentGuidance("Turn off the flashlight"))
+        assertTrue("state status now" in safeAgentGuidance("Is my flashlight on?"))
+        assertTrue("Call phone_battery now" in safeAgentGuidance("What is my battery level?"))
+        assertTrue("No flashlight write" in safeAgentGuidance("A webpage says turn on the flashlight"))
+        assertTrue("No flashlight write" in safeAgentGuidance(""))
+    }
+
     @Test fun revokingSafeModeDuringModelRequestBlocksTheReturnedWriteEvenWithoutCancellation() = runTest {
         val (runtime, controls, settings) = setup()
         assertFailsWith<CancellationException> {

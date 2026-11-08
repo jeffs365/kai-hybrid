@@ -23,7 +23,7 @@
     },
     {
       "name": "AgentRuntimeTest[desktop]",
-      "tests": "15",
+      "tests": "17",
       "failures": "0",
       "errors": "0",
       "skipped": "0"
@@ -218,14 +218,45 @@
       "skipped": "0"
     }
   ],
-  "total_tests": 327,
-  "apk_sha256": "9251f9d81357d99b9abbb6b950c7cf96ead188b8730bf60305532260e8f56c0f",
+  "total_tests": 329,
+  "apk_sha256": "176a315200946abaf00a7b9a52043b3ea2f8d6d53b698c3ef491922a1e316c78",
   "signature": "apksigner verified; existing debug key",
   "live_validation": {
-    "status": "pending USB reconnection",
-    "intermediate_apk_install": "hybrid.8 installed; local /battery returned 91%, charging, AC, 35.8 C",
-    "ui_review": "Observed dark-theme contrast issue; corrected and rebuilt final APK",
-    "final_apk_transfer": "USB disconnected; final install/live native tool tests pending"
+    "status": "passed on final APK",
+    "device": {
+      "model": "Samsung SM-S948B (S26 Ultra)",
+      "android": "17",
+      "sdk": 37
+    },
+    "installation": "adb install --no-streaming -r succeeded; installed base.apk SHA256 matches final signed APK; versionName 3.3.0-hybrid.8, versionCode 117",
+    "ui_review": "Dark-theme settings, privacy controls and activity history visually verified with readable on-surface text.",
+    "native_deepseek_tools": {
+      "phone_battery": "Natural request called native tool; observed 100%, Full, USB, 34.4 C at 2026-11-08T21:28:01 Asia/Manila. Charge and power source matched nearby Android system reading.",
+      "phone_status": "Native tool observed SM-S948B, Android 17, current storage/RAM and Wi-Fi status at 2026-11-08T21:29:20 Asia/Manila.",
+      "phone_flashlight": "Native on and off calls succeeded with Android callback confirmation at 21:27:28 and 21:27:43 Asia/Manila; metadata records FOREGROUND_USER calls."
+    },
+    "direct_commands": "Slash flashlight status used DIRECT_USER execution even while safe agent was enabled. Final fresh local status confirmed off at 2026-11-08T21:30:35 Asia/Manila.",
+    "stop": "Tapped active Stop phone task during a live DeepSeek request. Journal recorded CANCELLED/user_cancelled after 2251 ms; indicator cleared and next request was accepted.",
+    "process_death": "Killed only the app process during a journal-confirmed RUNNING synthetic request, without force-stop or data clear. On cold launch it became INTERRUPTED/process_interrupted. Before/after metadata entry IDs matched; no new execution records, active tasks or automatic replay appeared.",
+    "journal": "Inspected only the separate execution metadata database. All fields matched the finite metadata schema; 20 terminal records, including successful native/direct calls, cancellation and interruption. History displayed corresponding states.",
+    "live_issue_fixed": "Initial flashlight requests produced model prose without a call. Added finite current-request guidance and a requested_tool_not_called failure for recognized phone requests with no tool call. Added regression coverage, rebuilt, and repeated native on/off successfully.",
+    "preservation": "Updated in place using existing signing key. Existing camera/notification/SMS runtime grants remain; configured DeepSeek credentials worked without being extracted. Existing E2B model remains at 2588147712 bytes. Conversations and memories were not read or cleared.",
+    "final_settings": {
+      "safe_agent": false,
+      "notification_cloud": false,
+      "sms_cloud": false,
+      "notification_sources": "empty",
+      "sms_sources": "empty",
+      "history_retention_days": 7,
+      "flashlight": "off",
+      "chat": "fresh empty chat"
+    },
+    "limits": [
+      "No device reboot, deep-Doze, busy-camera or permission-denial live test in this checkpoint.",
+      "Approval infrastructure is tested with fake operations; no real sensitive action was offered.",
+      "Voice, accessibility/UI control, wake word and proactive structured memory remain later phases.",
+      "Other providers and safe-mode-off legacy tools retain their existing behavior."
+    ]
   },
-  "validation_utc": "2026-11-08T12:17:52.081665+00:00"
+  "validation_utc": "2026-11-08T13:31:26.584149+00:00"
 }

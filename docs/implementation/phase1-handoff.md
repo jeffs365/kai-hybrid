@@ -13,3 +13,5 @@ The next proposed phase is a personal-build YouTube accessibility prototype: ins
 Voice follows separately: local push-to-talk STT and measured Kokoro feasibility, then streaming, interruption and follow-ups, with wake word last. Existing Samsung/system TTS is not proof of an offline conversational voice pipeline. Verify all runtime/phonemizer/voice licenses and device benchmarks before packaging.
 
 Structured observation memory, importance scoring, notification budgets, daily briefing, Room-backed event/memory storage and proactive actions remain later phases. Current stored notes/conversations are preserved; notification privacy filtering is not automatic long-term memory extraction.
+
+Phase 1 device validation is complete on 2026-11-08 for the installed hybrid.8 APK. All 329 selected tests passed. Live native battery/status/flashlight calls, Stop, dark-theme history and interrupted recovery without replay passed. Safe agent and notification/SMS cloud sharing were left off; enable the new mode explicitly under Settings → Agent when DeepSeek is selected. This completes the approved foundation only; later phases still need their own concrete plan.
