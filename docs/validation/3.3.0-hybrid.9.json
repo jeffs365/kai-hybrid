@@ -1,0 +1,252 @@
+{
+  "version": "3.3.0-hybrid.9",
+  "status": "development checkpoint; device validation pending",
+  "branch": "feature/local-voice-mvp",
+  "app_id": "com.inspiredandroid.kai.hybrid",
+  "previous_validated_checkpoint": "v3.3.0-hybrid.8",
+  "scope": "Foreground on-device dictation with transcript review; offline system TTS and fixed-phrase voice diagnostics. YouTube deferred by owner.",
+  "build": "passed",
+  "tests": [
+    {
+      "name": "AgentExecutionStoreTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AgentPreferencesTest[desktop]",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AgentRuntimeTest[desktop]",
+      "tests": "17",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ApprovalGateTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekAgentProtocolTest[desktop]",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PermissionCancellationTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsExportImportTest[desktop]",
+      "tests": "48",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsTest[desktop]",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatSystemPromptBuilderTest[desktop]",
+      "tests": "43",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "CronExpressionTest[desktop]",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "HeartbeatPromptBuilderTest[desktop]",
+      "tests": "20",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalMemoryCommandsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalPhotoInputTest[desktop]",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalReminderCommandsTest[desktop]",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhoneCommandsTest[desktop]",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhotoModelCapabilitiesTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "SqlConversationPersistenceTest[desktop]",
+      "tests": "11",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "TaskStoreMigrationTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolExecutorTest[desktop]",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "EventPrivacyPolicyTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalModelCatalogTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "BraveSearchToolTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekConsultationToolTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "SchedulingToolsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolDefinitionsTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelExtendedTest[desktop]",
+      "tests": "11",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelFileAttachmentTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelLiteRTTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelSkillTest[desktop]",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelTest[desktop]",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "VoiceSessionTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 334,
+  "apk_sha256": "f6d0a9241b8753c62a4a26c99b3f93690d405dfd6c8902674ec5459032788539",
+  "apk_bytes": 59997041,
+  "signature": "apksigner verified; existing Kai debug signing key",
+  "live_validation": {
+    "status": "pending USB reconnection",
+    "connected_device": "Samsung S26 Ultra SM-S948B, Android 17/SDK 37",
+    "installed_on_device_recognizer_configuration": "Google Android System Intelligence AiAiSpeechRecognitionService",
+    "default_tts_at_audit": "com.samsung.SMT; global default not changed",
+    "offline_languages": "Not yet verified through runtime support API",
+    "microphone": "No permission granted or audio capture started by this work",
+    "final_kai_install": "Not attempted; phone offline",
+    "kokoro_prototype_install": "Transfer reported EOF and phone went offline; installation status unknown. Check before retry.",
+    "kokoro_private_replies": "Disabled because published engine source logs speech input text. Fixed public benchmark only.",
+    "pending_checks": [
+      "Installed APK hash/version and settings/composer visual review",
+      "Runtime installed offline language support",
+      "System local TTS metrics and prototype fixed-phrase benchmark",
+      "User-granted microphone and actual spoken transcript/reply trial",
+      "Cancel/lifecycle/audio focus on phone; extended conversational voice remains later work"
+    ]
+  },
+  "validation_utc": "2026-11-08T14:04:02.569329+00:00",
+  "formatting": "spotlessCheck passed"
+}

@@ -29,5 +29,6 @@ data class ChatActions(
     val sendSmsDraft: (String) -> Unit,
     val discardSmsDraft: (String) -> Unit,
     val consumeComposerPrefill: () -> Unit,
+    val prepareVoiceInput: () -> Unit = {},
     val respondAgentApproval: (String, Boolean) -> Unit = { _, _ -> },
 )

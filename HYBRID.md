@@ -4,7 +4,7 @@ Personal Android fork based on upstream Kai v3.3.0 (78bbb326). Apache-2.0 licens
 
 ## Saved baseline and future changes
 
-Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/kai9000-safe-agent-foundation`. Current installed and validated checkpoint is **3.3.0-hybrid.8**, tagged `v3.3.0-hybrid.8`, with the build and 329 tests passing. The earlier phone-control checkpoint remains `v3.3.0-hybrid.7`. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
+Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/local-voice-mvp` (voice work). The Phase 1 branch remains `feature/kai9000-safe-agent-foundation`. Current installed and validated checkpoint is **3.3.0-hybrid.8**, tagged `v3.3.0-hybrid.8`, with the build and 329 tests passing. The earlier phone-control checkpoint remains `v3.3.0-hybrid.7`. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
 
 Continue work from that branch. Read this file and the linked feature docs, make the change, run the relevant checks, then increment the Android hybrid version suffix and install the APK with `adb install -r`. Keep the same application ID and signing key to update the app while preserving its data. The upstream repository is available as the `upstream` remote for deliberate future merges.
 
@@ -80,6 +80,12 @@ Ask “What's my battery level?”, “Phone status”, “Turn on the flashligh
 Settings → Agent adds Safe agent · DeepSeek, initially off. Its finite structured tools are battery, phone status and flashlight. Natural phone requests use DeepSeek while this mode is on; slash forms stay local/offline. Tasks have an active Stop control, bounded execution, metadata history and interrupted-state recovery. Legacy background AI jobs pause while it is on; direct reminders still deliver. Other providers retain their existing tool sets. See [agent execution](docs/features/agent-execution.md).
 
 Notification/SMS AI sharing now starts off, including upgrades. Explicitly enable sharing and save allowed app IDs/senders under Settings → Agent before legacy notification tools or heartbeat can receive eligible content. Known sensitive patterns are excluded locally and rechecked on reads. Existing private data is preserved; these changes do not undo prior sharing. Memory classification, accessibility/YouTube, voice input, Kokoro and wake word are later phases.
+
+### Local voice (hybrid.9 development)
+
+The owner deferred the YouTube/accessibility prototype and moved to voice. The first slice adds Speak offline → review transcript → Send → local spoken reply, using the selected chat provider. Settings → Agent → Local voice adds readiness checks and fixed-phrase synthesis benchmarks. Microphone starts only after a user tap and Android permission. The new build is not yet phone-validated; USB disconnected during prototype speech-engine transfer. The installed validated Kai checkpoint remains hybrid.8 until the new APK installation is confirmed. See [voice behavior](docs/features/voice-input.md) and [current handoff](docs/implementation/voice-mvp-handoff.md).
+
+Kokoro's separate official prototype is limited to public fixed-phrase testing because its published service logs input text. Private chat use is disabled pending an audited build, license review and actual device performance/interruption checks. Wake word, streaming, automatic follow-ups and acoustic barge-in remain later work.
 
 ## Device validation
 

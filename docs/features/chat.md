@@ -8,6 +8,10 @@ Kai's chat system manages the message history, conversation persistence, file at
 
 DeepSeek safe mode uses a bounded task with an active indicator and Stop. Stop or /stop typed into chat is handled locally; Stop cancels the active request, pending approval and permission wait, and requests speech playback to stop. Actions already completed are not undone. Direct commands and structured phone tools share policy and observed results. The app displays verified phone results rather than substituting a generated success claim. Assistant reasoning is retained only as needed for protocol pairing, never used as spoken final text in this path. The mode does not automatically retry for missing interactive UI or fall back to another provider. See [agent execution](agent-execution.md).
 
+## Local voice in hybrid.9 development
+
+Regular Android chat adds Speak offline, with a reviewed transcript before Send. Starting speech interrupts playback and enables spoken replies; cancelled or stale recognition cannot submit a message. The Android backend selects an offline English reply voice. See [local voice behavior and verification limits](voice-input.md). Native device validation is tracked separately from source/build tests.
+
 ## Concepts
 
 ### Conversation

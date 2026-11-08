@@ -72,6 +72,7 @@ data class ChatUiState(
     val agentActivity: com.inspiredandroid.kai.agent.AgentActivity? = null,
     val agentApproval: com.inspiredandroid.kai.agent.AgentApproval? = null,
     val speechStopGeneration: Int = 0,
+    val voiceInputGeneration: Int = 0,
     val history: ImmutableList<History> = persistentListOf(),
     val isSpeechOutputEnabled: Boolean = false,
     val isLoading: Boolean = false,

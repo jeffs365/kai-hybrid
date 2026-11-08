@@ -81,7 +81,8 @@ class MainActivity : ComponentActivity() {
             var ttsReady by remember { mutableStateOf(false) }
             LaunchedEffect(Unit) { ttsReady = true }
             val textToSpeech = if (ttsReady) {
-                rememberSystemTextToSpeechOrNull()
+                val voiceEngine by appSettings.localVoiceEngine.collectAsStateWithLifecycle()
+                rememberSystemTextToSpeechOrNull(voiceEngine)
             } else {
                 null
             }
@@ -158,19 +159,48 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Speaks with the engine the user selected in the system text-to-speech settings, so a
- * third-party engine (Sherpa, RHVoice, eSpeak, ...) is honoured instead of being overridden.
- * Google's engine is only used when the system default fails to initialise, which happens on
- * devices where no default engine is configured.
+ * Uses the explicitly selected engine with an installed offline English voice.
+ * Kokoro is a separate Android engine; no native runtime is bundled in Kai.
+ * Missing engines or offline voices leave speech unavailable rather than choosing a network voice.
  */
+@OptIn(nl.marc_apps.tts.experimental.ExperimentalVoiceApi::class)
 @Composable
-private fun rememberSystemTextToSpeechOrNull(): TextToSpeechInstance? {
+private fun rememberSystemTextToSpeechOrNull(engine: String): TextToSpeechInstance? {
     val context = LocalContext.current.applicationContext
     var textToSpeech by remember { mutableStateOf<TextToSpeechInstance?>(null) }
 
-    LaunchedEffect(Unit) {
-        textToSpeech = TextToSpeechFactory(context, TextToSpeechEngine.SystemDefault).createOrNull()
-            ?: TextToSpeechFactory(context, TextToSpeechEngine.Google).createOrNull()
+    LaunchedEffect(engine) {
+        textToSpeech?.stop()
+        textToSpeech?.close()
+        textToSpeech = null
+        val factory = if (engine == "kokoro") {
+            TextToSpeechFactory(context, TextToSpeechEngine.Custom(com.inspiredandroid.kai.voice.KOKORO_ENGINE_PACKAGE))
+        } else {
+            TextToSpeechFactory(context, TextToSpeechEngine.SystemDefault)
+        }
+        val systemEngine = android.provider.Settings.Secure.getString(context.contentResolver, "tts_default_synth")
+        val requestsKokoro = engine == "kokoro" || (engine == "system" && systemEngine == com.inspiredandroid.kai.voice.KOKORO_ENGINE_PACKAGE)
+        val allowed = !requestsKokoro || com.inspiredandroid.kai.voice.KOKORO_CHAT_READY
+        val candidate = if (allowed && factory.isSupported) factory.createOrNull() else null
+        if (candidate != null) {
+            try {
+                val voices = candidate.voices.filter { !it.isOnline && it.languageTag.startsWith("en", ignoreCase = true) }.toList()
+                val voice = candidate.currentVoice?.takeIf { it in voices }
+                    ?: voices.firstOrNull { it.languageTag.startsWith("en-GB", ignoreCase = true) }
+                    ?: voices.firstOrNull()
+                if (voice == null) {
+                    candidate.close()
+                } else {
+                    candidate.currentVoice = voice
+                    textToSpeech = candidate
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                candidate.close()
+                throw e
+            } catch (_: Exception) {
+                candidate.close()
+            }
+        }
     }
 
     DisposableEffect(Unit) {

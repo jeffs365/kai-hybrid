@@ -57,6 +57,7 @@ class ChatViewModel(
         ask = ::ask,
         retry = ::retry,
         toggleSpeechOutput = ::toggleSpeechOutput,
+        prepareVoiceInput = ::prepareVoiceInput,
         clearHistory = ::clearHistory,
         setIsSpeaking = ::setIsSpeaking,
         addFile = ::addFile,
@@ -318,6 +319,7 @@ class ChatViewModel(
     }
 
     private fun clearHistory() {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         dataRepository.clearHistory()
         _state.update {
             it.copy(error = null, showFreeProviderSuggestions = false)
@@ -387,6 +389,10 @@ class ChatViewModel(
         ask(null)
     }
 
+    private fun prepareVoiceInput() {
+        _state.update { it.copy(isSpeechOutputEnabled = true, isSpeaking = false, speechStopGeneration = it.speechStopGeneration + 1) }
+    }
+
     private fun toggleSpeechOutput() {
         _state.update {
             it.copy(
@@ -396,6 +402,7 @@ class ChatViewModel(
     }
 
     private fun cancel() {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         dataRepository.agentRuntime?.stop()
         currentJob?.cancel()
         currentJob = null
@@ -405,6 +412,7 @@ class ChatViewModel(
     }
 
     private fun selectService(instanceId: String) {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         val freeMode = FREE_MODE_INSTANCE_IDS[instanceId]
         if (freeMode != null) {
             dataRepository.setFreeMode(freeMode)
@@ -462,6 +470,7 @@ class ChatViewModel(
     }
 
     private fun loadConversation(id: String) {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         currentJob?.cancel()
         currentJob = null
         val conversation = dataRepository.savedConversations.value.find { it.id == id }
@@ -533,6 +542,7 @@ class ChatViewModel(
     }
 
     private fun startNewChat(composerPrefill: String? = null) {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         currentJob?.cancel()
         currentJob = null
         dataRepository.startNewChat()
@@ -553,6 +563,7 @@ class ChatViewModel(
     }
 
     private fun enterInteractiveMode() {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         dataRepository.startNewChat()
         dataRepository.setInteractiveMode(true)
         _state.update {
@@ -565,6 +576,7 @@ class ChatViewModel(
     }
 
     private fun exitInteractiveMode() {
+        _state.update { it.copy(voiceInputGeneration = it.voiceInputGeneration + 1) }
         currentJob?.cancel()
         currentJob = null
         dataRepository.startNewChat()

@@ -185,6 +185,15 @@ class AppSettings(internal val settings: Settings) {
         settings.putBoolean("deepseek_consultation_enabled", enabled)
     }
 
+    private val _localVoiceEngine by lazy { MutableStateFlow(getLocalVoiceEngine()) }
+    val localVoiceEngine: StateFlow<String> get() = _localVoiceEngine
+    fun getLocalVoiceEngine(): String = settings.getString("local_voice_engine", "system").takeIf { it in setOf("system", "kokoro") } ?: "system"
+    fun setLocalVoiceEngine(engine: String) {
+        require(engine in setOf("system", "kokoro"))
+        settings.putString("local_voice_engine", engine)
+        _localVoiceEngine.value = engine
+    }
+
     private val agentJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
     private val _agentPreferences by lazy { MutableStateFlow(getAgentPreferences()) }
     val agentPreferences: StateFlow<com.inspiredandroid.kai.agent.AgentPreferences> get() = _agentPreferences

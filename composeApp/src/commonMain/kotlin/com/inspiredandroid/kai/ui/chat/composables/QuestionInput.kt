@@ -99,8 +99,21 @@ fun QuestionInput(
     onSelectService: (String) -> Unit = {},
     installedSkills: ImmutableList<SkillManifest> = persistentListOf(),
     modifier: Modifier = Modifier,
+    voiceEnabled: Boolean = false,
+    voiceReplyAvailable: Boolean = false,
+    voiceContextKey: String = "",
+    onVoiceStart: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
+        if (voiceEnabled) {
+            com.inspiredandroid.kai.voice.VoiceInputControl(
+                enabled = !isLoading && files.isEmpty() && textState.text.isEmpty(),
+                replyAvailable = voiceReplyAvailable,
+                contextKey = voiceContextKey + ":" + availableServices.firstOrNull()?.instanceId.orEmpty(),
+                onStart = onVoiceStart,
+                onTranscript = { text -> onTextStateChange(TextFieldValue(text, TextRange(text.length))) },
+            )
+        }
         // Slash autocomplete: shown when the user is typing the first token and it starts
         // with `/`. Selecting an entry rewrites the first token to the canonical skill id
         // so the ViewModel can match it at send time.

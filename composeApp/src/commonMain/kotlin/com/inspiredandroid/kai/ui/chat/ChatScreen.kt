@@ -959,6 +959,13 @@ private fun ChatModeScreen(
                     files = uiState.files,
                     addFile = uiState.actions.addFile,
                     removeFile = uiState.actions.removeFile,
+                    voiceEnabled = true,
+                    voiceReplyAvailable = textToSpeech != null,
+                    voiceContextKey = "${uiState.currentConversationId}:${uiState.voiceInputGeneration}",
+                    onVoiceStart = {
+                        textToSpeech?.stop()
+                        uiState.actions.prepareVoiceInput()
+                    },
                     ask = uiState.actions.ask,
                     supportedFileExtensions = uiState.supportedFileExtensions,
                     textState = questionInputText,

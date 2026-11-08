@@ -92,6 +92,7 @@ internal fun AgentContent(uiState: SettingsUiState, actions: SettingsActions) {
     StaggeredSettingsColumns(
         start = {
             if (uiState.agentSupported) {
+                SettingsCard { com.inspiredandroid.kai.voice.LocalVoiceSettings() }
                 SettingsCard { AgentExecutionSettings(uiState, actions) }
             }
             SettingsCard {
