@@ -82,7 +82,10 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) { ttsReady = true }
             val textToSpeech = if (ttsReady) {
                 val voiceEngine by appSettings.localVoiceEngine.collectAsStateWithLifecycle()
-                rememberSystemTextToSpeechOrNull(voiceEngine)
+                val voiceName by appSettings.kokoroVoice.collectAsStateWithLifecycle()
+                val voiceSpeed by appSettings.kokoroSpeed.collectAsStateWithLifecycle()
+                val voiceRevision by appSettings.localVoiceRevision.collectAsStateWithLifecycle()
+                rememberSystemTextToSpeechOrNull(voiceEngine, voiceName, voiceSpeed, voiceRevision)
             } else {
                 null
             }
@@ -165,11 +168,11 @@ class MainActivity : ComponentActivity() {
  */
 @OptIn(nl.marc_apps.tts.experimental.ExperimentalVoiceApi::class)
 @Composable
-private fun rememberSystemTextToSpeechOrNull(engine: String): TextToSpeechInstance? {
+private fun rememberSystemTextToSpeechOrNull(engine: String, voiceName: String, speed: Float, revision: Int): TextToSpeechInstance? {
     val context = LocalContext.current.applicationContext
     var textToSpeech by remember { mutableStateOf<TextToSpeechInstance?>(null) }
 
-    LaunchedEffect(engine) {
+    LaunchedEffect(engine, voiceName, speed, revision) {
         textToSpeech?.stop()
         textToSpeech?.close()
         textToSpeech = null
@@ -180,18 +183,24 @@ private fun rememberSystemTextToSpeechOrNull(engine: String): TextToSpeechInstan
         }
         val systemEngine = android.provider.Settings.Secure.getString(context.contentResolver, "tts_default_synth")
         val requestsKokoro = engine == "kokoro" || (engine == "system" && systemEngine == com.inspiredandroid.kai.voice.KOKORO_ENGINE_PACKAGE)
-        val allowed = !requestsKokoro || com.inspiredandroid.kai.voice.KOKORO_CHAT_READY
+        val unsafeSystemEngine = engine == "system" && systemEngine == com.inspiredandroid.kai.voice.LEGACY_KOKORO_ENGINE_PACKAGE
+        val allowed = !unsafeSystemEngine && (!requestsKokoro || com.inspiredandroid.kai.voice.trustedKokoroEngine(context))
         val candidate = if (allowed && factory.isSupported) factory.createOrNull() else null
         if (candidate != null) {
             try {
                 val voices = candidate.voices.filter { !it.isOnline && it.languageTag.startsWith("en", ignoreCase = true) }.toList()
-                val voice = candidate.currentVoice?.takeIf { it in voices }
-                    ?: voices.firstOrNull { it.languageTag.startsWith("en-GB", ignoreCase = true) }
-                    ?: voices.firstOrNull()
+                val voice = if (requestsKokoro) {
+                    voices.firstOrNull { it.name == voiceName && it.name in com.inspiredandroid.kai.voice.KokoroProfiles.voices }
+                } else {
+                    candidate.currentVoice?.takeIf { it in voices }
+                        ?: voices.firstOrNull { it.languageTag.startsWith("en-GB", ignoreCase = true) }
+                        ?: voices.firstOrNull()
+                }
                 if (voice == null) {
                     candidate.close()
                 } else {
                     candidate.currentVoice = voice
+                    if (requestsKokoro) candidate.rate = speed
                     textToSpeech = candidate
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {

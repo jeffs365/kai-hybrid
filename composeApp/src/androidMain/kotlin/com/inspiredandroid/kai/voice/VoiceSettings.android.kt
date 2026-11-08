@@ -32,34 +32,49 @@ import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-// Official separate Android TTS engine, not a native runtime bundled into Kai.
-const val KOKORO_CHAT_READY = false
-const val KOKORO_ENGINE_PACKAGE = "com.k2fsa.sherpa.onnx.tts.engine"
-
 @Composable
 actual fun LocalVoiceSettings() {
     if (LocalInspectionMode.current) return
     val context = LocalContext.current
     val settings: AppSettings = koinInject()
     val selected by settings.localVoiceEngine.collectAsStateWithLifecycle()
+    val voiceName by settings.kokoroVoice.collectAsStateWithLifecycle()
+    val speed by settings.kokoroSpeed.collectAsStateWithLifecycle()
+    var chooseVoice by remember { mutableStateOf(false) }
+    var draftSpeed by remember(speed) { mutableStateOf(speed) }
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("Microphone starts only from Speak offline in chat. Recognition never falls back to a network service.") }
-    val installed = remember { context.packageManager.queryIntentServices(Intent(TextToSpeech.Engine.INTENT_ACTION_TTS_SERVICE), 0).any { it.serviceInfo.packageName == KOKORO_ENGINE_PACKAGE } }
+    val installed = remember { trustedKokoroEngine(context) }
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text("Local voice", style = MaterialTheme.typography.titleMedium)
             Text("Selected reply engine: ${if (selected == "kokoro") "Kokoro" else "System default"}. Kai selects an installed offline English voice; otherwise speech stays unavailable.", style = MaterialTheme.typography.bodySmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextButton(enabled = !busy, onClick = { settings.setLocalVoiceEngine("system") }) { Text("Use system voice") }
-                TextButton(enabled = installed && KOKORO_CHAT_READY && !busy, onClick = { settings.setLocalVoiceEngine("kokoro") }) { Text("Use Kokoro") }
+                TextButton(enabled = installed && !busy, onClick = { settings.setLocalVoiceEngine("kokoro") }) { Text("Use Kokoro") }
             }
             if (installed) {
                 TextButton(enabled = !busy, onClick = {
                     context.packageManager.getLaunchIntentForPackage(KOKORO_ENGINE_PACKAGE)?.let { context.startActivity(it) }
                 }) { Text("Configure Kokoro voice") }
             }
-            Text("Kokoro is available for fixed-phrase testing only while its privacy and interruption behavior are reviewed. Chat replies use an offline system voice. Android's global default is unchanged.", style = MaterialTheme.typography.bodySmall)
+            Text(if (installed) "Kai Kokoro generates English speech locally. The engine has no internet permission. Android's global default is unchanged." else "Kai Kokoro is not installed or compatible yet. System voice remains available.", style = MaterialTheme.typography.bodySmall)
+            if (installed) {
+                Box {
+                    TextButton(enabled = !busy, onClick = { chooseVoice = true }) { Text(KokoroProfiles.voices.getValue(voiceName)) }
+                    DropdownMenu(expanded = chooseVoice, onDismissRequest = { chooseVoice = false }) {
+                        KokoroProfiles.voices.forEach { (id, label) ->
+                            DropdownMenuItem(text = { Text(label) }, onClick = {
+                                chooseVoice = false
+                                settings.setKokoroVoice(id)
+                            })
+                        }
+                    }
+                }
+                Text("Speaking speed: ${(draftSpeed * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
+                Slider(value = draftSpeed, onValueChange = { draftSpeed = it }, valueRange = 0.8f..1.2f, enabled = !busy, onValueChangeFinished = { settings.setKokoroSpeed(draftSpeed) })
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextButton(enabled = !busy, onClick = {
                     busy = true
@@ -84,7 +99,7 @@ actual fun LocalVoiceSettings() {
                     val engine = if (selected == "kokoro") KOKORO_ENGINE_PACKAGE else null
                     scope.launch {
                         try {
-                            val result = benchmarkLocalVoice(context, engine)
+                            val result = benchmarkLocalVoice(context, engine, if (selected == "kokoro") voiceName else null, if (selected == "kokoro") speed else 1f)
                             File(context.cacheDir, "voice-tts-benchmark.json").writeText(result.toString(2))
                             message = result.optString("summary")
                         } catch (e: CancellationException) {
@@ -100,10 +115,10 @@ actual fun LocalVoiceSettings() {
             if (installed) {
                 TextButton(enabled = !busy, onClick = {
                     busy = true
-                    message = "Testing Kokoro with fixed public phrases only…"
+                    message = "Testing the selected Kokoro voice with fixed public phrases…"
                     scope.launch {
                         try {
-                            val result = benchmarkLocalVoice(context, KOKORO_ENGINE_PACKAGE)
+                            val result = benchmarkLocalVoice(context, KOKORO_ENGINE_PACKAGE, voiceName, speed)
                             File(context.cacheDir, "voice-kokoro-benchmark.json").writeText(result.toString(2))
                             message = result.optString("summary")
                         } catch (e: CancellationException) {
@@ -114,7 +129,7 @@ actual fun LocalVoiceSettings() {
                             busy = false
                         }
                     }
-                }) { Text("Benchmark Kokoro prototype") }
+                }) { Text("Benchmark Kokoro voice") }
             }
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
             Text(message, style = MaterialTheme.typography.bodySmall)
@@ -175,14 +190,21 @@ private suspend fun createNativeTts(context: Context, engine: String?): TextToSp
     }
 }
 
-private suspend fun benchmarkLocalVoice(context: Context, engine: String?): JSONObject {
+private suspend fun benchmarkLocalVoice(context: Context, engine: String?, requestedVoice: String? = null, speed: Float = 1f): JSONObject {
     val start = SystemClock.elapsedRealtime()
     val tts = createNativeTts(context, engine)
     try {
-        val voice = tts.voices.orEmpty().filter { !it.isNetworkConnectionRequired && it.locale.language == "en" }
-            .sortedByDescending { it.locale.country == "GB" }.firstOrNull() ?: error("Offline English voice unavailable")
+        if (engine == KOKORO_ENGINE_PACKAGE) check(trustedKokoroEngine(context))
+        val voices = tts.voices.orEmpty().filter { !it.isNetworkConnectionRequired && it.locale.language == "en" }
+        val voice = if (requestedVoice != null) {
+            voices.firstOrNull { it.name == requestedVoice && it.name in KokoroProfiles.voices }
+        } else {
+            voices.sortedByDescending { it.locale.country == "GB" }.firstOrNull()
+        }
+        checkNotNull(voice) { "Offline English voice unavailable" }
         check(tts.setVoice(voice) == TextToSpeech.SUCCESS)
-        val result = JSONObject().put("requested_engine", engine ?: "system").put("voice", voice.name).put("offline_voice", true)
+        check(tts.setSpeechRate(speed) == TextToSpeech.SUCCESS)
+        val result = JSONObject().put("requested_engine", engine ?: "system").put("voice", voice.name).put("offline_voice", true).put("speed", speed.toDouble())
             .put("initialization_ms", SystemClock.elapsedRealtime() - start)
         val rows = JSONArray()
         val samples = listOf("Hello. I am Kai, and this voice is generated on your phone.", "Your next reminder is ready. You can ask me to change it.", "Good evening. How can I help you today?")

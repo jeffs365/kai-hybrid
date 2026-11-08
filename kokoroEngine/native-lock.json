@@ -1,0 +1,13 @@
+{
+  "sherpa_commit": "69e79f5910d4461619680eea0b07e378927ff3fe",
+  "source_archive_sha256": "fef572eeb61e1852694d3a461a1e3b14804bc12bc8390c4ae98a0578ddf2b7d8",
+  "publisher_apk": "sherpa-onnx-1.12.22-arm64-v8a-zh_en-tts-engine-kokoro-multi-lang-v1_0.apk",
+  "publisher_apk_sha256": "c3f9facf1f07ab62f237dd5ffdf9f7fbc6e1d92d991e6ecf2cfaf9c9083ff93c",
+  "onnxruntime_headers": {
+    "onnxruntime_c_api.h": "7e47eb78563da119f740dc0ddfda96800e779e0bcbd169a9a49e9c10746c4cd5",
+    "onnxruntime_cxx_api.h": "5cfb60c7222086b89724d3168267ab25af9951e15864bf54a8fdf7429b771021",
+    "onnxruntime_cxx_inline.h": "d8b059c29ef378eee31c0b4d54347489a0e3abe1a4135c7a19c49b32661bfbc3",
+    "onnxruntime_float16.h": "ecdcb4a53176c8b3bbcf674788fcf5ec923fb2b5c762c3f6cfb56fdb6c259aa1"
+  },
+  "ndk_version": "26.1.10909125"
+}

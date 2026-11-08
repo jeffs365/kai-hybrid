@@ -13,7 +13,7 @@ plugins {
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     kotlin {
         target("**/*.kt")
-        targetExclude("**/build/**")
+        targetExclude("**/build/**", "kokoroEngine/.native-build/**", "kokoroEngine/.native/**", "kokoroEngine/.model-staging/**")
         ktlint()
             .editorConfigOverride(
                 mapOf(
@@ -28,6 +28,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     }
     kotlinGradle {
         target("**/*.gradle.kts")
+        targetExclude("**/build/**", "kokoroEngine/.native-build/**")
         ktlint()
     }
 }

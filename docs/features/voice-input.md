@@ -2,7 +2,7 @@
 
 **Last verified:** 2026-11-08
 
-Hybrid.9 development adds a foreground Android speech button to regular chat. Source/build verification and device verification are separate; the release validation record identifies what actually passed. YouTube/accessibility work was deferred by the owner.
+Hybrid.9 adds a foreground Android speech button to regular chat; hybrid.10 adds a separate offline Kokoro reply engine. The owner confirmed the first dictation/spoken reply flow works. Source/build verification and device verification are separate; the release validation record identifies what actually passed. YouTube/accessibility work was deferred by the owner.
 
 ## Speak, review, send
 
@@ -20,11 +20,15 @@ Starting the microphone stops current TTS playback and enables reply speech for 
 
 Settings → Agent → Local voice offers recognition diagnostics and a local synthesis benchmark. These diagnostics do not record microphone audio. Recognition diagnostics contain availability, language tags and numeric errors only. Synthesis uses three fixed public test phrases, reports initialization/first synthesized audio/total synthesis/real-time factor, and deletes temporary WAV files afterward. First synthesized audio is not the same as first audible assistant response latency. Results are stored in app cache as metadata; the speech engine preference is device-local and is not included in settings export.
 
-## Kokoro evaluation boundary
+## Offline Kokoro replies
 
-Kokoro can be tested as a separate Android TTS engine through platform IPC, with no native Kokoro runtime or phonemizer embedded in Kai. The official prototype asset and its integrity/source pin are recorded in the implementation handoff. That prototype is not enabled for private chat replies: its published service source logs speech input text, and interruption behavior/performance have not been accepted. A fixed-phrase benchmark is available only when the separate engine is installed. The disabled Kokoro reply choice and runtime gate also prevent selecting this engine through the system-default route.
+Settings → Agent → Local voice offers Use Kokoro when the matching personal engine is installed. George is the default British English voice; Daniel and Lewis can be selected for comparison. Speaking speed is configurable from 80% to 120%, initially 95%. These preferences stay on this device. Use system voice returns to the offline system voice without changing Android’s global TTS default.
 
-Before enabling Kokoro for chat, use an audited engine build without text logging, verify all runtime/phonemizer/model/voice licenses, configure and compare the actual British male voices, benchmark the phone, and test Stop. The model's voice table lists George, but this is not evidence that the voice is configured or working on the device. System TTS remains the first-slice fallback.
+Kokoro runs in a separate optional Android application with no internet or microphone permission. Kai checks the engine’s signing certificate, compatible version, protocol, permissions and exact offline voice names. An unavailable or untrusted engine cannot silently fall back to a different voice. The published upstream prototype remains blocked because its service logs speech input. The personal engine removes Java text logging, compiles out native Android speech logs, discards native stdout/stderr and sanitizes native exceptions. Its diagnostics contain only fixed status/stage/voice values, timings, PCM byte count and segment count.
+
+Voice weights and phonemizer data occupy about 361 MiB in the engine’s private storage. All 360 files are checked against pinned SHA-256 values before use. The current personal installation uses local setup scripts; there is no in-app model downloader. Model weights and native binaries are excluded from Git. The main app remains Apache-2.0 and communicates through Android TTS; the separate engine includes a GPL phonemizer and carries its own GPL license and dependency notices.
+
+Synthesis is serialized and bounded to 4,000 characters, 32 segments, 220 characters per segment and a 90-second deadline. Stop invalidates the request and checks every outgoing audio buffer. An in-flight native inference can finish before it observes cancellation; its audio is discarded. This does not implement acoustic barge-in. Fixed public samples of all three voices, a three-phrase George benchmark and Stop were tested on the S26 Ultra; exact timing and memory measurements are recorded in the hybrid.10 validation record. These timings measure synthesis, not full assistant response latency.
 
 ## Verification and limits
 
@@ -42,6 +46,9 @@ Automated session tests cover exactly-once final delivery, stale callbacks, canc
 | ui/chat/ChatViewModel.kt, ChatActions.kt and ChatUiState.kt in common source | Voice context invalidation and speech interruption request |
 | ui/chat/ChatScreen.kt in common source | Immediate TTS stop before recording and reply availability |
 | ui/settings/AgentSettings.kt in common source | Local voice panel |
-| data/AppSettings.kt in common source | Device-local engine preference |
+| data/AppSettings.kt in common source | Device-local engine, voice and speed preferences |
+| voice/KokoroProfiles.kt in common source | Finite British English presets |
+| voice/KokoroEngineTrust.kt in Android source | Matching-signature engine checks |
+| kokoroEngine/ | Separate GPL offline speech app, model manifest, native build patch and setup scripts |
 | androidApp/src/main/kotlin/com/inspiredandroid/kai/MainActivity.kt | Selected engine initialization and offline voice filtering |
 | androidApp/src/main/AndroidManifest.xml | Foreground microphone permission and service visibility |

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Intentionally no INTERNET, microphone or storage permission. -->
+    <queries><intent><action android:name="android.intent.action.TTS_SERVICE"/></intent></queries>
+    <application android:label="Kai Kokoro · Offline voice" android:icon="@android:drawable/ic_btn_speak_now" android:allowBackup="false" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <meta-data android:name="kai.kokoro.protocol" android:value="1"/>
+        <service android:name=".KokoroService" android:exported="true" android:label="Kai Kokoro · Offline voice">
+            <intent-filter><action android:name="android.intent.action.TTS_SERVICE"/><category android:name="android.intent.category.DEFAULT"/></intent-filter>
+            <meta-data android:name="android.speech.tts" android:resource="@xml/tts_engine"/>
+        </service>
+        <activity android:name=".EngineSettingsActivity" android:exported="true" android:label="Kai Kokoro · Offline voice">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+            <intent-filter><action android:name="android.speech.tts.engine.CONFIGURE_ENGINE"/><category android:name="android.intent.category.DEFAULT"/></intent-filter>
+        </activity>
+        <activity android:name=".CheckVoiceDataActivity" android:exported="true" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter><action android:name="android.speech.tts.engine.CHECK_TTS_DATA"/><category android:name="android.intent.category.DEFAULT"/></intent-filter>
+        </activity>
+    </application>
+</manifest>

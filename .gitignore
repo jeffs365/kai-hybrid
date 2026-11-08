@@ -37,3 +37,8 @@ dist/
 *.keystore
 *.jks
 keystore.properties
+
+# Optional offline speech-engine build/model caches (recreated from pinned sources)
+/kokoroEngine/.native/
+/kokoroEngine/.native-build/
+/kokoroEngine/.model-staging/

@@ -185,6 +185,27 @@ class AppSettings(internal val settings: Settings) {
         settings.putBoolean("deepseek_consultation_enabled", enabled)
     }
 
+    private val _localVoiceRevision = MutableStateFlow(0)
+    val localVoiceRevision: StateFlow<Int> get() = _localVoiceRevision
+    private val _kokoroVoice by lazy { MutableStateFlow(getKokoroVoice()) }
+    val kokoroVoice: StateFlow<String> get() = _kokoroVoice
+    fun getKokoroVoice(): String = com.inspiredandroid.kai.voice.KokoroProfiles.validVoice(settings.getString("kokoro_voice", com.inspiredandroid.kai.voice.KokoroProfiles.DEFAULT))
+    fun setKokoroVoice(value: String) {
+        require(value in com.inspiredandroid.kai.voice.KokoroProfiles.voices)
+        settings.putString("kokoro_voice", value)
+        _kokoroVoice.value = value
+        _localVoiceRevision.value++
+    }
+    private val _kokoroSpeed by lazy { MutableStateFlow(getKokoroSpeed()) }
+    val kokoroSpeed: StateFlow<Float> get() = _kokoroSpeed
+    fun getKokoroSpeed(): Float = settings.getFloat("kokoro_speed", 0.95f).takeIf { it.isFinite() && it in 0.8f..1.2f } ?: 0.95f
+    fun setKokoroSpeed(value: Float) {
+        require(value.isFinite() && value in 0.8f..1.2f)
+        settings.putFloat("kokoro_speed", value)
+        _kokoroSpeed.value = value
+        _localVoiceRevision.value++
+    }
+
     private val _localVoiceEngine by lazy { MutableStateFlow(getLocalVoiceEngine()) }
     val localVoiceEngine: StateFlow<String> get() = _localVoiceEngine
     fun getLocalVoiceEngine(): String = settings.getString("local_voice_engine", "system").takeIf { it in setOf("system", "kokoro") } ?: "system"
@@ -192,6 +213,7 @@ class AppSettings(internal val settings: Settings) {
         require(engine in setOf("system", "kokoro"))
         settings.putString("local_voice_engine", engine)
         _localVoiceEngine.value = engine
+        _localVoiceRevision.value++
     }
 
     private val agentJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }

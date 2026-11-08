@@ -39,6 +39,21 @@ class VoiceSessionTest {
         assertEquals(OfflineLanguageStatus.UNSUPPORTED, offlineLanguageStatus("fil-PH", listOf("en-US"), listOf("en-GB"), emptyList()))
     }
 
+    @Test fun kokoroVoiceAndSpeedAreBoundedAndPersistWithoutArbitraryVoiceNames() {
+        val backing = com.russhwolf.settings.MapSettings()
+        val settings = com.inspiredandroid.kai.data.AppSettings(backing)
+        assertEquals(KokoroProfiles.DEFAULT, settings.getKokoroVoice())
+        assertEquals(0.95f, settings.getKokoroSpeed())
+        settings.setKokoroVoice("kai-kokoro-bm_daniel")
+        settings.setKokoroSpeed(1.05f)
+        val restored = com.inspiredandroid.kai.data.AppSettings(backing)
+        assertEquals("kai-kokoro-bm_daniel", restored.getKokoroVoice())
+        assertEquals(1.05f, restored.getKokoroSpeed())
+        assertFailsWith<IllegalArgumentException> { settings.setKokoroVoice("arbitrary-engine-voice") }
+        assertFailsWith<IllegalArgumentException> { settings.setKokoroSpeed(Float.NaN) }
+        assertFailsWith<IllegalArgumentException> { settings.setKokoroSpeed(5f) }
+    }
+
     @Test fun engineChoiceIsDeviceLocalAndRestrictedToKnownEngines() {
         val backing = com.russhwolf.settings.MapSettings()
         val settings = com.inspiredandroid.kai.data.AppSettings(backing)

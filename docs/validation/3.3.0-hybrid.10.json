@@ -1,0 +1,401 @@
+{
+  "version": "3.3.0-hybrid.10",
+  "status": "Source/build and Kokoro engine tests passed; final Kai installed hash and chat selection await USB reconnect",
+  "branch": "feature/kokoro-offline-voice",
+  "app_id": "com.inspiredandroid.kai.hybrid",
+  "engine_id": "com.inspiredandroid.kai.kokoro",
+  "previous_validated_checkpoint": "v3.3.0-hybrid.8",
+  "scope": "Optional offline Kokoro English reply engine; configurable George/Daniel/Lewis and speed. Includes prior local voice and unsupported-locale guard.",
+  "build": "passed",
+  "formatting": "spotlessCheck passed; separate invocation",
+  "tests": [
+    {
+      "name": "CronExpressionTest[desktop]",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsExportImportTest[desktop]",
+      "tests": "48",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "HeartbeatPromptBuilderTest[desktop]",
+      "tests": "20",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AgentRuntimeTest[desktop]",
+      "tests": "17",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelExtendedTest[desktop]",
+      "tests": "11",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatSystemPromptBuilderTest[desktop]",
+      "tests": "43",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "VoiceSessionTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalPhotoInputTest[desktop]",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ApprovalGateTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolDefinitionsTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhotoModelCapabilitiesTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalMemoryCommandsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalModelCatalogTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "SqlConversationPersistenceTest[desktop]",
+      "tests": "11",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelFileAttachmentTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ToolExecutorTest[desktop]",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "EventPrivacyPolicyTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "TaskStoreMigrationTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelTest[desktop]",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekAgentProtocolTest[desktop]",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "LocalReminderCommandsTest[desktop]",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "BraveSearchToolTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PermissionCancellationTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AgentPreferencesTest[desktop]",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "SchedulingToolsTest[desktop]",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "DeepSeekConsultationToolTest[desktop]",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AgentExecutionStoreTest[desktop]",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelSkillTest[desktop]",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "ChatViewModelLiteRTTest[desktop]",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "AppSettingsTest[desktop]",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "PhoneCommandsTest[desktop]",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "engine_tests": [
+    {
+      "name": "com.inspiredandroid.kai.kokoro.SpeechPolicyTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 342,
+  "artifacts": {
+    "kai": {
+      "path": "androidApp/build/outputs/apk/foss/debug/androidApp-foss-debug.apk",
+      "sha256": "bfdfac07662fb38810232a5c638be350effee7e189d5b281ca334804675f8ee6",
+      "bytes": 59238891
+    },
+    "engine": {
+      "path": "kokoroEngine/build/outputs/apk/debug/kokoroEngine-debug.apk",
+      "sha256": "fa0138829790d51f8b9621763626ab8791f34e73d3b1a7cd69fb1feda92b9e42",
+      "bytes": 10650498
+    }
+  },
+  "signature_certificate_sha256": "d353708d0956a63b90c9262e650cbdb561ab5fea33a79a976b28919de177864c",
+  "signature": "Both APKs apksigner verified with existing matching private workstation debug signer",
+  "native": {
+    "sherpa_commit": "69e79f5910d4461619680eea0b07e378927ff3fe",
+    "source_archive_sha256": "fef572eeb61e1852694d3a461a1e3b14804bc12bc8390c4ae98a0578ddf2b7d8",
+    "privacy_patch": "KAI_KOKORO_PRIVATE_LOGS compiles SHERPA_ONNX_LOGE to no-op; engine process also discards native stdout/stderr",
+    "libraries": {
+      "libsherpa-onnx-jni.so": {
+        "sha256": "2278d6a08697e08c3c6b7fc012e1966074a1cad931c6b9e4e3c0796cacd8eb1c",
+        "bytes": 4268592
+      },
+      "libonnxruntime.so": {
+        "sha256": "c7c0e6b0f9c364a4df4bfc9a3a3576b691899e96f4d9beb60f3b3a7ce4bf572c",
+        "bytes": 15988232
+      }
+    }
+  },
+  "native_safety_patch_sha256": "66ce6fffd3f56b71f0956b7fe4f0b2e2c99c375d9f8fc3b771e206f7d54a94d8",
+  "model": {
+    "files": 360,
+    "bytes": 377679880,
+    "manifest_sha256": "0ea1da5a1526132ceae83c75aa136a69dddc3751cb442be976e3538a53abba60",
+    "verification": "all per-file SHA-256 checks passed in installed engine; private files retained across -r updates"
+  },
+  "device": {
+    "model": "Samsung SM-S948B S26 Ultra",
+    "android_sdk": 37,
+    "android_version": "17",
+    "abi": "arm64-v8a",
+    "page_size": 4096,
+    "kai_install": "Intermediate hybrid.10 installed; final artifact hash verification pending reconnect",
+    "engine_install": "Final engine APK installed with Success",
+    "global_tts": "com.samsung.SMT; unchanged",
+    "owner_voice_confirmation": "Owner confirmed prior dictation/transcript-review/spoken-reply flow works, then asked for Kokoro",
+    "selected_engine": "system pending final UI activation",
+    "microphone": "No automated recording or ADB permission grant in Kokoro work",
+    "phone_power_setting": "Temporary stay_on_while_plugged_in adjustment restored to original 15 and verified",
+    "fixed_samples": {
+      "george": {
+        "status": "completed",
+        "stage": "delivery",
+        "voice": "kai-kokoro-bm_george",
+        "elapsed_ms": 8204,
+        "first_audio_ms": 1977,
+        "pcm_bytes": 283012,
+        "segments": 1,
+        "stop_latency_ms": -1
+      },
+      "daniel": {
+        "status": "completed",
+        "stage": "delivery",
+        "voice": "kai-kokoro-bm_daniel",
+        "elapsed_ms": 8333,
+        "first_audio_ms": 2695,
+        "pcm_bytes": 268672,
+        "segments": 1,
+        "stop_latency_ms": -1
+      },
+      "lewis": {
+        "status": "completed",
+        "stage": "delivery",
+        "voice": "kai-kokoro-bm_lewis",
+        "elapsed_ms": 8520,
+        "first_audio_ms": 2715,
+        "pcm_bytes": 264140,
+        "segments": 1,
+        "stop_latency_ms": -1
+      }
+    },
+    "benchmark_george": {
+      "requested_engine": "com.inspiredandroid.kai.kokoro",
+      "voice": "kai-kokoro-bm_george",
+      "offline_voice": true,
+      "speed": 0.949999988079071,
+      "initialization_ms": 51,
+      "samples": [
+        {
+          "sample": 0,
+          "first_synthesized_audio_ms": 710,
+          "total_synthesis_ms": 2912,
+          "audio_seconds": 4.728166666666667,
+          "real_time_factor": 0.6158835348443724
+        },
+        {
+          "sample": 1,
+          "first_synthesized_audio_ms": 1324,
+          "total_synthesis_ms": 2523,
+          "audio_seconds": 3.938125,
+          "real_time_factor": 0.6406602126646564
+        },
+        {
+          "sample": 2,
+          "first_synthesized_audio_ms": 861,
+          "total_synthesis_ms": 2038,
+          "audio_seconds": 2.8267083333333334,
+          "real_time_factor": 0.7209799383853421
+        }
+      ],
+      "summary": "Offline synthesis completed. First audio: 710, 1324, 861 ms. This measures synthesis, not audible response latency."
+    },
+    "stop_before_audio": {
+      "status": "stopped",
+      "stage": "delivery",
+      "voice": "kai-kokoro-bm_george",
+      "elapsed_ms": 3449,
+      "first_audio_ms": -1,
+      "pcm_bytes": 0,
+      "segments": 0,
+      "stop_latency_ms": 1378
+    },
+    "stop_during_playback": {
+      "status": "stopped",
+      "stage": "delivery",
+      "voice": "kai-kokoro-bm_george",
+      "elapsed_ms": 7200,
+      "first_audio_ms": 2892,
+      "pcm_bytes": 174940,
+      "segments": 0,
+      "stop_latency_ms": 0
+    },
+    "memory_initial_kb": {
+      "rss": 1019112,
+      "peak_rss": 1257728
+    },
+    "privacy_log_review": {
+      "scope": "engine PID only; fixed public samples only",
+      "pid": 28998,
+      "log_lines": 188,
+      "speech_text_found": false
+    }
+  },
+  "privacy": {
+    "speech_logs": "Engine Kotlin contains no Android Log statements; native Android macros compiled out; own native stdout/stderr discarded; native exceptions sanitized",
+    "binary_log_format_scan": "raw text, normalization text and failed-tokenization input format strings absent from packaged JNI",
+    "diagnostics": "Fixed metadata only; no transcript/audio/raw exceptions/utterance hash/request IDs",
+    "legacy_publisher_engine": "Not installed; remains blocked for private Kai replies",
+    "github_actions": "disabled",
+    "publication": "Source only; no public APK, native binary or weights published"
+  },
+  "limitations": [
+    "Ten successive natural conversation turns not yet accepted",
+    "Bluetooth, phone-call, echo and audio-focus combinations not live-tested",
+    "Native ONNX inference cannot be preempted; cancelled PCM is discarded",
+    "Timing is synthesis, not end-to-end audible assistant response latency",
+    "No wake word, automatic follow-ups, acoustic barge-in or streaming chat in this checkpoint",
+    "Engine setup currently uses developer-assisted local USB transfer; no in-app model download",
+    "Measured engine RSS about 1GiB; peak about 1.2GiB"
+  ],
+  "validation_utc": "2026-11-08T15:08:32.249266+00:00"
+}
