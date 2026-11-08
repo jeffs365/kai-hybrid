@@ -3,6 +3,14 @@ package com.inspiredandroid.kai.voice
 import kotlin.test.*
 
 class VoiceSessionTest {
+    @Test fun kokoroProtocolSelectsDistinctVoicesWithoutUsingLocalizedDisplayNames() {
+        assertEquals("en-GB-x-kai-george", KokoroProfiles.languageTag(KokoroProfiles.DEFAULT))
+        assertEquals("en-GB-x-kai-daniel", KokoroProfiles.languageTag("kai-kokoro-bm_daniel"))
+        assertEquals("en-GB-x-kai-lewis", KokoroProfiles.languageTag("kai-kokoro-bm_lewis"))
+        assertNull(KokoroProfiles.languageTag("English (United Kingdom)"))
+        assertEquals(3, KokoroProfiles.voices.keys.map { KokoroProfiles.languageTag(it) }.toSet().size)
+    }
+
     @Test fun finalTranscriptDeliveredOnceAndNeverAutomaticallySubmitted() {
         val gate = VoiceSession()
         val id = gate.begin("chat-a:deepseek")

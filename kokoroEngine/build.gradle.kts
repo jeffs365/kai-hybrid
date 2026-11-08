@@ -10,8 +10,8 @@ android {
         applicationId = "com.inspiredandroid.kai.kokoro"
         minSdk = 26
         targetSdk = 37
-        versionCode = 20261108
-        versionName = "1.12.22-kai.1"
+        versionCode = 20261109
+        versionName = "1.12.22-kai.2"
         ndk { abiFilters += "arm64-v8a" }
     }
     sourceSets["main"].jniLibs.srcDir(".native")

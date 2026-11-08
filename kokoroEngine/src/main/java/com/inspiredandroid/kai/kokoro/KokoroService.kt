@@ -49,7 +49,7 @@ class KokoroService : TextToSpeechService() {
     override fun onGetDefaultVoiceNameFor(lang: String?, country: String?, variant: String?): String? = SpeechPolicy.DEFAULT_VOICE.takeIf { lang in setOf("en", "eng") && ModelFiles.ready(this) }
     override fun onGetVoices(): List<Voice> = if (ModelFiles.ready(this)) {
         SpeechPolicy.speakers.keys.map {
-            Voice(it, Locale.UK, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, emptySet())
+            Voice(it, Locale.forLanguageTag(SpeechPolicy.languageTag(it)), Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, emptySet())
         }
     } else {
         emptyList()

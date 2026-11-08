@@ -1,6 +1,6 @@
 {
   "version": "3.3.0-hybrid.10",
-  "status": "Source/build and Kokoro engine tests passed; final Kai installed hash and chat selection await USB reconnect",
+  "status": "Installed offline Kokoro voice checkpoint verified; ten-turn natural-conversation acceptance remains pending",
   "branch": "feature/kokoro-offline-voice",
   "app_id": "com.inspiredandroid.kai.hybrid",
   "engine_id": "com.inspiredandroid.kai.kokoro",
@@ -53,7 +53,7 @@
     },
     {
       "name": "VoiceSessionTest[desktop]",
-      "tests": "8",
+      "tests": "9",
       "failures": "0",
       "errors": "0",
       "skipped": "0"
@@ -230,23 +230,23 @@
   "engine_tests": [
     {
       "name": "com.inspiredandroid.kai.kokoro.SpeechPolicyTest",
-      "tests": "5",
+      "tests": "6",
       "failures": "0",
       "errors": "0",
       "skipped": "0"
     }
   ],
-  "total_tests": 342,
+  "total_tests": 344,
   "artifacts": {
     "kai": {
       "path": "androidApp/build/outputs/apk/foss/debug/androidApp-foss-debug.apk",
-      "sha256": "bfdfac07662fb38810232a5c638be350effee7e189d5b281ca334804675f8ee6",
-      "bytes": 59238891
+      "sha256": "98f8c261f86d028e8d7ebad89acc874ff49ebf4c3011fbd48bba51cc80e95adc",
+      "bytes": 59239074
     },
     "engine": {
       "path": "kokoroEngine/build/outputs/apk/debug/kokoroEngine-debug.apk",
-      "sha256": "fa0138829790d51f8b9621763626ab8791f34e73d3b1a7cd69fb1feda92b9e42",
-      "bytes": 10650498
+      "sha256": "19838ea1adfa9cf5829a8b0978dd06153d79bd5e9496cc2a67427e1d9d5a0a6e",
+      "bytes": 8917494
     }
   },
   "signature_certificate_sha256": "d353708d0956a63b90c9262e650cbdb561ab5fea33a79a976b28919de177864c",
@@ -279,12 +279,12 @@
     "android_version": "17",
     "abi": "arm64-v8a",
     "page_size": 4096,
-    "kai_install": "Intermediate hybrid.10 installed; final artifact hash verification pending reconnect",
-    "engine_install": "Final engine APK installed with Success",
-    "global_tts": "com.samsung.SMT; unchanged",
+    "kai_install": "Final APK installed in place with Success via checksum-verified 8MiB pieces; installed base.apk SHA-256 matches final local artifact",
+    "engine_install": "Final protocol-2 engine APK installed in place with Success; installed base.apk SHA-256 matches final local artifact",
+    "global_tts": "com.samsung.SMT; verified unchanged",
     "owner_voice_confirmation": "Owner confirmed prior dictation/transcript-review/spoken-reply flow works, then asked for Kokoro",
-    "selected_engine": "system pending final UI activation",
-    "microphone": "No automated recording or ADB permission grant in Kokoro work",
+    "selected_engine": "Kokoro; George British English; speed95%, verified in Agent settings UI",
+    "microphone": "No automated recording or permission grant. Final AppOps shows historical recording only; none active.",
     "phone_power_setting": "Temporary stay_on_while_plugged_in adjustment restored to original 15 and verified",
     "fixed_samples": {
       "george": {
@@ -378,7 +378,64 @@
       "pid": 28998,
       "log_lines": 188,
       "speech_text_found": false
-    }
+    },
+    "engine_permissions": "No requested permissions, verified in installed package metadata",
+    "chat_battery_reply": {
+      "status": "completed",
+      "stage": "delivery",
+      "voice": "kai-kokoro-bm_george",
+      "elapsed_ms": 29258,
+      "first_audio_ms": 11644,
+      "pcm_bytes": 884548,
+      "segments": 1,
+      "stop_latency_ms": -1
+    },
+    "chat_short_deepseek_reply": {
+      "status": "completed",
+      "stage": "delivery",
+      "voice": "kai-kokoro-bm_george",
+      "elapsed_ms": 3611,
+      "first_audio_ms": 1376,
+      "pcm_bytes": 146332,
+      "segments": 1,
+      "stop_latency_ms": -1
+    },
+    "chat_local_gemma_reply": {
+      "reply": {
+        "provider": "Local Model",
+        "synthetic_question": "What is 17 plus 25? Reply in one sentence.",
+        "response": "Forty-two is the sum of seventeen and twenty-five."
+      },
+      "synthesis": {
+        "status": "completed",
+        "stage": "delivery",
+        "voice": "kai-kokoro-bm_george",
+        "elapsed_ms": 6590,
+        "first_audio_ms": 3538,
+        "pcm_bytes": 173840,
+        "segments": 1,
+        "stop_latency_ms": -1
+      }
+    },
+    "coexistence_memory_kb": {
+      "com.inspiredandroid.kai.hybrid": {
+        "VmHWM": 1067140,
+        "VmRSS": 791620,
+        "Threads": 44
+      },
+      "com.inspiredandroid.kai.kokoro": {
+        "VmHWM": 1532532,
+        "VmRSS": 1079604,
+        "Threads": 19
+      }
+    },
+    "final_privacy_log_review": {
+      "scope": "engine PID only after synthetic chat tests",
+      "pid": 18413,
+      "log_lines": 35,
+      "speech_text_found": false
+    },
+    "final_ui": "Fresh empty chat ready; no offline-voice-unavailable warning. DeepSeek restored as original selected provider after Gemma E2B test. Safe agent, notification sharing and SMS sharing remain off. Original Kai and unsafe publisher TTS package remain absent."
   },
   "privacy": {
     "speech_logs": "Engine Kotlin contains no Android Log statements; native Android macros compiled out; own native stdout/stderr discarded; native exceptions sanitized",
@@ -395,7 +452,25 @@
     "Timing is synthesis, not end-to-end audible assistant response latency",
     "No wake word, automatic follow-ups, acoustic barge-in or streaming chat in this checkpoint",
     "Engine setup currently uses developer-assisted local USB transfer; no in-app model download",
-    "Measured engine RSS about 1GiB; peak about 1.2GiB"
+    "Synthesis latency depends on input and cold state: first audio1376ms for a short DeepSeek reply,3538ms for a short local Gemma reply,11644ms for the longer battery status with numbers/timestamp. These are synthesis measurements, not total response latency.",
+    "Engine RSS about1.0GiB after the coexistence test; observed peak1.46GiB. Resident memory excludes some GPU/shared allocations; no extended battery or memory-pressure endurance test."
   ],
-  "validation_utc": "2026-11-08T15:08:32.249266+00:00"
+  "validation_utc": "2026-11-08T15:47:50.985998+00:00",
+  "installed_artifact_verification": {
+    "kai": {
+      "installed_sha256": "98f8c261f86d028e8d7ebad89acc874ff49ebf4c3011fbd48bba51cc80e95adc",
+      "matches_final_build": true,
+      "bytes": 59239074
+    },
+    "engine": {
+      "installed_sha256": "19838ea1adfa9cf5829a8b0978dd06153d79bd5e9496cc2a67427e1d9d5a0a6e",
+      "matches_final_build": true,
+      "bytes": 8917494
+    }
+  },
+  "engine_version": "1.12.22-kai.2",
+  "engine_version_code": 20261109,
+  "engine_protocol": 2,
+  "voice_selection": "Protocol 2 uses exact, unique en-GB-x-kai-{george,daniel,lewis} private-use locale tags through the public library API. The pinned library name field is a localized display label, not a native voice ID; unknown, duplicate or absent matches remain unavailable.",
+  "preservation": "Updated both packages with -r; no app data cleared. Existing DeepSeek credentials worked without extraction, and installed Gemma E2B answered the synthetic arithmetic query. No preferences, saved conversations or memory store were extracted."
 }

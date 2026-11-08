@@ -6,6 +6,12 @@ import java.util.concurrent.atomic.AtomicLong
 object SpeechPolicy {
     val speakers = mapOf("kai-kokoro-bm_george" to 26, "kai-kokoro-bm_daniel" to 24, "kai-kokoro-bm_lewis" to 27)
     const val DEFAULT_VOICE = "kai-kokoro-bm_george"
+    fun languageTag(name: String): String = when (name) {
+        DEFAULT_VOICE -> "en-GB-x-kai-george"
+        "kai-kokoro-bm_daniel" -> "en-GB-x-kai-daniel"
+        "kai-kokoro-bm_lewis" -> "en-GB-x-kai-lewis"
+        else -> error("unsupported_voice")
+    }
     fun chunks(input: String, limit: Int = 220): List<String>? {
         if (input.length > 4_000 || input.any { it == '\u0000' }) return null
         var rest = input.trim().replace(Regex("\\s+"), " ")

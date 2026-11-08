@@ -3,7 +3,7 @@
     <!-- Intentionally no INTERNET, microphone or storage permission. -->
     <queries><intent><action android:name="android.intent.action.TTS_SERVICE"/></intent></queries>
     <application android:label="Kai Kokoro · Offline voice" android:icon="@android:drawable/ic_btn_speak_now" android:allowBackup="false" android:theme="@android:style/Theme.Material.Light.NoActionBar">
-        <meta-data android:name="kai.kokoro.protocol" android:value="1"/>
+        <meta-data android:name="kai.kokoro.protocol" android:value="2"/>
         <service android:name=".KokoroService" android:exported="true" android:label="Kai Kokoro · Offline voice">
             <intent-filter><action android:name="android.intent.action.TTS_SERVICE"/><category android:name="android.intent.category.DEFAULT"/></intent-filter>
             <meta-data android:name="android.speech.tts" android:resource="@xml/tts_engine"/>

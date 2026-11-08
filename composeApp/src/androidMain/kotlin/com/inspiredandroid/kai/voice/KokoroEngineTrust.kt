@@ -13,6 +13,6 @@ fun trustedKokoroEngine(context: Context): Boolean = runCatching {
     val info = pm.getPackageInfo(KOKORO_ENGINE_PACKAGE, PackageManager.GET_PERMISSIONS or PackageManager.GET_META_DATA)
     val version = if (android.os.Build.VERSION.SDK_INT >= 28) info.longVersionCode else info.versionCode.toLong()
     pm.checkSignatures(context.packageName, KOKORO_ENGINE_PACKAGE) == PackageManager.SIGNATURE_MATCH &&
-        version >= 20261108 && info.applicationInfo?.metaData?.getInt("kai.kokoro.protocol") == 1 &&
+        version >= 20261109 && info.applicationInfo?.metaData?.getInt("kai.kokoro.protocol") == 2 &&
         info.requestedPermissions.orEmpty().none { it in setOf(Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO) }
 }.getOrDefault(false)

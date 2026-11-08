@@ -190,7 +190,7 @@ private fun rememberSystemTextToSpeechOrNull(engine: String, voiceName: String, 
             try {
                 val voices = candidate.voices.filter { !it.isOnline && it.languageTag.startsWith("en", ignoreCase = true) }.toList()
                 val voice = if (requestsKokoro) {
-                    voices.firstOrNull { it.name == voiceName && it.name in com.inspiredandroid.kai.voice.KokoroProfiles.voices }
+                    voices.singleOrNull { it.languageTag == com.inspiredandroid.kai.voice.KokoroProfiles.languageTag(voiceName) }
                 } else {
                     candidate.currentVoice?.takeIf { it in voices }
                         ?: voices.firstOrNull { it.languageTag.startsWith("en-GB", ignoreCase = true) }

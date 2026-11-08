@@ -4,6 +4,17 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SpeechPolicyTest {
+    @Test fun protocolVoiceTagsKeepBritishEnglishAndDistinctIdentity() {
+        val tags = SpeechPolicy.speakers.keys.map { SpeechPolicy.languageTag(it) }
+        assertEquals(setOf("en-GB-x-kai-george", "en-GB-x-kai-daniel", "en-GB-x-kai-lewis"), tags.toSet())
+        tags.forEach {
+            val locale = java.util.Locale.forLanguageTag(it)
+            assertEquals("en", locale.language)
+            assertEquals("GB", locale.country)
+            assertEquals(it, locale.toLanguageTag())
+        }
+    }
+
     @Test fun sentenceChunksPreserveWordsAndStayBounded() {
         val text = "First sentence. " + "More words to read. ".repeat(100)
         val chunks = SpeechPolicy.chunks(text)!!
