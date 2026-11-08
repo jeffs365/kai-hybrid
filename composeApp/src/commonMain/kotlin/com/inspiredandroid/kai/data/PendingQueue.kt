@@ -26,13 +26,15 @@ class PendingQueue<T, K>(
 
     suspend fun add(items: List<T>) {
         if (items.isEmpty()) return
-        persisted.update { (it + items).takeLast(maxSize) }
+        persisted.update { current ->
+            val keys = items.map(keyOf).toSet()
+            (current.filterNot { keyOf(it) in keys } + items.distinctBy(keyOf)).takeLast(maxSize)
+        }
     }
 
     suspend fun remove(items: List<T>) {
         if (items.isEmpty()) return
-        val keys = items.map(keyOf).toSet()
-        persisted.update { current -> current.filterNot { keyOf(it) in keys } }
+        persisted.update { current -> current.filterNot { item -> items.any { keyOf(it) == keyOf(item) && it == item } } }
     }
 
     suspend fun clear() {

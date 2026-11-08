@@ -14,6 +14,11 @@ plugins {
 
 sqldelight {
     databases {
+        create("AgentDatabase") {
+            packageName.set("com.inspiredandroid.kai.agentdb")
+            srcDirs.setFrom("src/commonMain/sqldelightAgent")
+            verifyMigrations.set(true)
+        }
         create("KaiDatabase") {
             packageName.set("com.inspiredandroid.kai.db")
             // The schema lives on user devices — structural changes need a

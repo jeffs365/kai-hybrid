@@ -511,4 +511,28 @@
     <string name="terminal_sandbox_not_ready">Sandbox is not ready</string>
     <string name="chat_edit_submission_content_description">Edit submission</string>
     <string name="chat_cancel_edit_content_description">Cancel edit</string>
+
+    <string name="safe_agent_title">Safe agent · DeepSeek</string>
+    <string name="safe_agent_description">Battery, phone status and flashlight tools only. Other tools and background AI jobs pause while this mode is on. Direct reminders still deliver. Applies when DeepSeek is selected; other providers retain their existing tools.</string>
+    <string name="event_privacy_title">Notification and SMS privacy</string>
+    <string name="event_privacy_description">Notification and SMS content stay local by default. Cloud tools and heartbeat can read only allowed sources when sharing is on. Known authentication and financial-secret patterns are excluded. These rules apply to future processing, including reads of older records.</string>
+    <string name="event_notification_cloud">Share allowed notifications with AI</string>
+    <string name="event_sms_cloud">Share allowed SMS with AI</string>
+    <string name="event_notification_sources">Allowed notification app IDs · one per line</string>
+    <string name="event_sms_sources">Allowed SMS senders · one per line</string>
+    <string name="event_sources_hint">For example, com.whatsapp. Keep banking, password and authentication sources excluded. SMS senders must match exactly, ignoring letter case.</string>
+    <string name="agent_retention">Activity retention · 1–30 days</string>
+    <string name="agent_save_policy">Save sources and retention</string>
+    <string name="agent_invalid_policy">Enter valid app IDs and a retention period from 1 to 30 days.</string>
+    <string name="agent_activity_title">Activity history</string>
+    <string name="agent_activity_empty">No recorded phone tasks yet.</string>
+    <string name="agent_history_note">Shows the latest 20 records. History contains action names, times and outcomes; no messages, API keys, screenshots or raw tool arguments.</string>
+    <string name="agent_clear_history">Clear completed history</string>
+    <string name="agent_delete_entry">Delete record</string>
+    <string name="agent_stop">Stop phone task</string>
+    <string name="agent_running">Phone task in progress</string>
+    <string name="agent_approval">Review requested action</string>
+    <string name="agent_approve">Approve once</string>
+    <string name="agent_deny">Deny</string>
+    <string name="agent_step">Step</string>
 </resources>

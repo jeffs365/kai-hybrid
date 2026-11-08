@@ -1,8 +1,12 @@
 # Chat & Conversations
 
-**Last verified:** 2026-10-23
+**Last verified:** 2026-11-08
 
 Kai's chat system manages the message history, conversation persistence, file attachments, and speech output. Conversations are service-independent — switching providers does not affect which conversation is loaded or restored. Multiple conversations are persisted and browsable via a history sheet.
+
+## Safe phone tasks in hybrid.8
+
+DeepSeek safe mode uses a bounded task with an active indicator and Stop. Stop or /stop typed into chat is handled locally; Stop cancels the active request, pending approval and permission wait, and requests speech playback to stop. Actions already completed are not undone. Direct commands and structured phone tools share policy and observed results. The app displays verified phone results rather than substituting a generated success claim. Assistant reasoning is retained only as needed for protocol pairing, never used as spoken final text in this path. The mode does not automatically retry for missing interactive UI or fall back to another provider. See [agent execution](agent-execution.md).
 
 ## Concepts
 
@@ -132,6 +136,8 @@ Multiple files can be attached to a single prompt. Each file is added one at a t
 
 | File | Purpose |
 |---|---|
+| `ui/chat/AgentStatusBanner.kt in common source` | Bounded task indicator, Stop and review interface |
+| `agent/AgentRuntime.kt in common source` | Shared task lifecycle and observed results |
 | `composeApp/src/commonMain/.../data/Conversation.kt` | Conversation and message data classes, type constants |
 | `composeApp/src/commonMain/.../data/ConversationStorage.kt` | In-memory conversation flow, transcript trimming, legacy migration |
 | `composeApp/src/commonMain/.../data/ConversationPersistence.kt` | SQL and settings-blob persistence backends, staged-import handling |

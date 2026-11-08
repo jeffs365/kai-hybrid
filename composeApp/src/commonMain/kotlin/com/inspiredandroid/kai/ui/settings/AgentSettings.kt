@@ -91,6 +91,9 @@ import kotlin.time.Instant
 internal fun AgentContent(uiState: SettingsUiState, actions: SettingsActions) {
     StaggeredSettingsColumns(
         start = {
+            if (uiState.agentSupported) {
+                SettingsCard { AgentExecutionSettings(uiState, actions) }
+            }
             SettingsCard {
                 SoulEditor(
                     soulText = uiState.soulText,

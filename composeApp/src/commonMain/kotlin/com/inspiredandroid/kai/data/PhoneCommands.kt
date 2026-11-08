@@ -76,7 +76,11 @@ internal fun guardLocalPhoneClaims(response: String): String {
     }
 }
 
-internal class PhoneCommands(private val settings: AppSettings, private val controls: PhoneControls) {
+internal class PhoneCommands(
+    private val settings: AppSettings,
+    private val controls: PhoneControls,
+    private val dispatch: (suspend (PhoneCommand) -> String)? = null,
+) {
     suspend fun execute(command: PhoneCommand): String {
         if (!controls.supported) return "Phone controls are available in Kai Hybrid on Android."
         val id = when (command) {
@@ -84,36 +88,34 @@ internal class PhoneCommands(private val settings: AppSettings, private val cont
             PhoneCommand.Status -> PHONE_STATUS
             else -> PHONE_FLASHLIGHT
         }
+        if (command != PhoneCommand.InvalidFlashlight) dispatch?.let { return it(command) }
         if (!settings.isToolEnabled(id)) return "This phone control is disabled. Enable " + phoneToolDefinitions.first { it.id == id }.name + " in Settings → Tools."
+        if (command == PhoneCommand.InvalidFlashlight) return "Flashlight unchanged. Use 'Turn on the flashlight', 'Turn off the flashlight', or /flashlight status. Send one immediate action at a time."
         return when (command) {
-            PhoneCommand.InvalidFlashlight -> "Flashlight unchanged. Use 'Turn on the flashlight', 'Turn off the flashlight', or /flashlight status. Send one immediate action at a time."
-
-            PhoneCommand.Battery -> controls.battery()?.let { "**Phone battery**\n\n" + renderBattery(it) + timestamp() }
-                ?: "Android could not provide a battery reading. No battery level was guessed."
-
-            PhoneCommand.Status -> controls.status()?.let { status ->
-                buildString {
-                    append("**Phone status**\n\n" + status.model + " · Android " + status.androidVersion)
-                    status.battery?.let { append("\n\n" + renderBattery(it)) }
-                    append("\n\nInternal data storage: " + size(status.storageAvailableBytes) + " available of " + size(status.storageTotalBytes))
-                    append("\nRAM: " + size(status.memoryAvailableBytes) + " available of " + size(status.memoryTotalBytes))
-                    append("\nConnection: " + status.connection)
-                    append(timestamp())
-                }
-            } ?: "Android could not provide phone status."
-
-            is PhoneCommand.Flashlight -> {
-                val result = controls.flashlight(command.enabled)
-                result.message ?: when (result.state) {
-                    FlashlightState.ON -> "Flashlight is on."
-                    FlashlightState.OFF -> "Flashlight is off."
-                    FlashlightState.UNAVAILABLE -> "The flashlight is unavailable. The camera or light may be busy."
-                    FlashlightState.UNKNOWN -> "Android did not confirm the flashlight state. Check the phone's Quick Settings."
-                }
-            }
+            PhoneCommand.Battery -> controls.battery()?.let(PhoneResponses::battery) ?: "Android could not provide a battery reading. No battery level was guessed."
+            PhoneCommand.Status -> controls.status()?.let(PhoneResponses::status) ?: "Android could not provide phone status."
+            is PhoneCommand.Flashlight -> PhoneResponses.flashlight(controls.flashlight(command.enabled))
+            PhoneCommand.InvalidFlashlight -> error("Handled above")
         }
     }
+}
 
+internal object PhoneResponses {
+    fun battery(value: BatterySnapshot): String = "**Phone battery**\n\n" + renderBattery(value) + timestamp()
+    fun status(status: PhoneSnapshot): String = buildString {
+        append("**Phone status**\n\n" + status.model + " · Android " + status.androidVersion)
+        status.battery?.let { append("\n\n" + renderBattery(it)) }
+        append("\n\nInternal data storage: " + size(status.storageAvailableBytes) + " available of " + size(status.storageTotalBytes))
+        append("\nRAM: " + size(status.memoryAvailableBytes) + " available of " + size(status.memoryTotalBytes))
+        append("\nConnection: " + status.connection)
+        append(timestamp())
+    }
+    fun flashlight(result: FlashlightResult): String = result.message ?: when (result.state) {
+        FlashlightState.ON -> "Flashlight is on."
+        FlashlightState.OFF -> "Flashlight is off."
+        FlashlightState.UNAVAILABLE -> "The flashlight is unavailable. The camera or light may be busy."
+        FlashlightState.UNKNOWN -> "Android did not confirm the flashlight state. Check the phone's Quick Settings."
+    }
     private fun renderBattery(battery: BatterySnapshot): String = buildString {
         append("Battery: " + (battery.percent?.takeIf { it in 0..100 }?.let { "$it%" } ?: "Unavailable"))
         append("\nState: " + battery.state)
@@ -121,7 +123,6 @@ internal class PhoneCommands(private val settings: AppSettings, private val cont
         battery.temperatureTenthsC?.let { append("\nTemperature: " + it / 10.0 + " °C") }
         append("\nBattery saver: " + if (battery.batterySaver) "On" else "Off")
     }
-
-    private fun timestamp(): String = "\n\nRead from Android at " + Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()) + " (" + TimeZone.currentSystemDefault().id + ")."
+    internal fun timestamp(): String = "\n\nRead from Android at " + Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()) + " (" + TimeZone.currentSystemDefault().id + ")."
     private fun size(bytes: Long?): String = if (bytes == null || bytes < 0) "unavailable" else ((bytes / 1_073_741_824.0 * 10).roundToLong() / 10.0).toString() + " GiB"
 }

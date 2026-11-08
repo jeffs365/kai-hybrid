@@ -25,6 +25,7 @@ data class FlashlightResult(val state: FlashlightState, val message: String? = n
 
 /** Direct Android operations; no model-generated action arguments or cloud requests. */
 interface PhoneControls {
+    fun canMutate(): Boolean = supported
     val supported: Boolean
     suspend fun battery(): BatterySnapshot?
     suspend fun status(): PhoneSnapshot?

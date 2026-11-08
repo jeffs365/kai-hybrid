@@ -1,5 +1,6 @@
 package com.inspiredandroid.kai.data
 
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.serialization.serializer
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -18,7 +19,7 @@ import kotlin.time.ExperimentalTime
  * in the first place, so this store never sees it.
  */
 @OptIn(ExperimentalTime::class)
-class NotificationStore(appSettings: AppSettings) {
+class NotificationStore(private val appSettings: AppSettings) {
 
     private val store = SettingsJsonList(
         read = appSettings::getNotificationsStoreJson,
@@ -41,9 +42,28 @@ class NotificationStore(appSettings: AppSettings) {
         keyOf = { it.id },
     )
 
-    fun getPending(): List<NotificationRecord> = pendingQueue.get()
+    fun getPending(): List<NotificationRecord> = pendingQueue.get().filter {
+        it.postedAtEpochMs >= Clock.System.now().toEpochMilliseconds() - MAX_AGE_MS && com.inspiredandroid.kai.events.EventPrivacyPolicy.notification(it) != null
+    }
 
-    suspend fun addPending(record: NotificationRecord) = pendingQueue.add(listOf(record))
+    suspend fun addPending(record: NotificationRecord) {
+        val safe = com.inspiredandroid.kai.events.EventPrivacyPolicy.notification(record) ?: return
+        if (pendingQueue.get().any { com.inspiredandroid.kai.events.EventPrivacyPolicy.sameNotification(it, safe) }) return
+        pendingQueue.add(listOf(safe))
+    }
+
+    private val cloudAliases = kotlinx.coroutines.flow.MutableStateFlow<Map<String, String>>(emptyMap())
+    fun cloudRecord(record: NotificationRecord): NotificationRecord? {
+        val safe = com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudNotification(record, appSettings.getAgentPreferences()) ?: return null
+        val key = record.packageName + "\u0000" + record.id
+        val alias = cloudAliases.updateAndGet { current ->
+            if (key in current) current else current.entries.toList().takeLast(4999).associate { it.toPair() } + (key to newCloudAlias())
+        }.getValue(key)
+        return safe.copy(id = alias)
+    }
+
+    @OptIn(kotlin.uuid.ExperimentalUuidApi::class)
+    private fun newCloudAlias(): String = "event-" + kotlin.uuid.Uuid.random().toString()
 
     suspend fun removePending(records: List<NotificationRecord>) = pendingQueue.remove(records)
 
@@ -52,7 +72,29 @@ class NotificationStore(appSettings: AppSettings) {
     fun getStore(): List<NotificationRecord> = store.get()
 
     suspend fun addRecord(record: NotificationRecord) {
-        store.update { prune(it + record) }
+        val safe = com.inspiredandroid.kai.events.EventPrivacyPolicy.notification(record) ?: return
+        store.update { current ->
+            val same = current.firstOrNull { it.id == safe.id && it.packageName == safe.packageName }
+            if (same == safe) {
+                current
+            } else {
+                prune(current.filterNot { it.id == safe.id && it.packageName == safe.packageName } + safe)
+            }
+        }
+    }
+
+    private val captureMutex = kotlinx.coroutines.sync.Mutex()
+    suspend fun capture(record: NotificationRecord) {
+        captureMutex.lock()
+        try {
+            val safe = com.inspiredandroid.kai.events.EventPrivacyPolicy.notification(record) ?: return
+            if (store.get().any { it.id == safe.id && it.packageName == safe.packageName && it.postedAtEpochMs > safe.postedAtEpochMs }) return
+            if (store.get().any { com.inspiredandroid.kai.events.EventPrivacyPolicy.sameNotification(it, safe) && kotlin.math.abs(it.postedAtEpochMs - safe.postedAtEpochMs) < 300_000 }) return
+            addRecord(safe)
+            addPending(safe)
+        } finally {
+            captureMutex.unlock()
+        }
     }
 
     /** Drops records older than 24h or beyond the per-package cap. Called after each heartbeat. */

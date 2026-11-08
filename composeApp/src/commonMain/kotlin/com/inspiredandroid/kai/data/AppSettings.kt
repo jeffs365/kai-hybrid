@@ -81,8 +81,8 @@ fun detectExportableSections(json: JsonObject): Map<ImportSection, String?> {
     }
 
     val toolOverrides = json["tool_overrides"]?.jsonObject
-    if (toolOverrides != null && toolOverrides.isNotEmpty()) {
-        val enabled = toolOverrides.count { (_, v) ->
+    if ((toolOverrides != null && toolOverrides.isNotEmpty()) || json["safe_agent_preferences"] != null) {
+        val enabled = toolOverrides.orEmpty().count { (_, v) ->
             try {
                 v.jsonPrimitive.content.toBoolean()
             } catch (_: Exception) {
@@ -135,7 +135,7 @@ fun detectImportSections(json: JsonObject): Map<ImportSection, String?> {
     if (json["splinterlands_enabled"] != null || json["splinterlands_account"] != null) {
         sections[ImportSection.SPLINTERLANDS] = null
     }
-    if (json["tool_overrides"] != null) {
+    if (json["tool_overrides"] != null || json["safe_agent_preferences"] != null) {
         val enabled = json["tool_overrides"]?.jsonObject?.count { (_, v) ->
             try {
                 v.jsonPrimitive.content.toBoolean()
@@ -183,6 +183,24 @@ class AppSettings(internal val settings: Settings) {
 
     fun setDeepSeekConsultationEnabled(enabled: Boolean) {
         settings.putBoolean("deepseek_consultation_enabled", enabled)
+    }
+
+    private val agentJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+    private val _agentPreferences by lazy { MutableStateFlow(getAgentPreferences()) }
+    val agentPreferences: StateFlow<com.inspiredandroid.kai.agent.AgentPreferences> get() = _agentPreferences
+
+    fun getAgentPreferences(): com.inspiredandroid.kai.agent.AgentPreferences = runCatching {
+        agentJson.decodeFromString<com.inspiredandroid.kai.agent.AgentPreferences>(settings.getString("safe_agent_preferences", "{}"))
+    }.getOrDefault(com.inspiredandroid.kai.agent.AgentPreferences())
+
+    fun setAgentPreferences(value: com.inspiredandroid.kai.agent.AgentPreferences) {
+        val safe = value.copy(
+            retentionDays = value.retentionDays.coerceIn(1, 30),
+            notificationSources = value.notificationSources.filter { it.length <= 200 && Regex("[a-zA-Z][a-zA-Z0-9_]*(?:\\.[a-zA-Z0-9_]+)+").matches(it) }.take(100).toSet(),
+            smsSources = value.smsSources.map { it.trim().lowercase() }.filter { it.isNotBlank() && it.length <= 80 }.take(100).toSet(),
+        )
+        settings.putString("safe_agent_preferences", agentJson.encodeToString(com.inspiredandroid.kai.agent.AgentPreferences.serializer(), safe))
+        _agentPreferences.value = safe
     }
 
     // App open tracking

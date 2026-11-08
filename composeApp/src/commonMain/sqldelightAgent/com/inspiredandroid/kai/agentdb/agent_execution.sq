@@ -1,0 +1,17 @@
+-- Independent journal database, schema version 1. Never store raw messages or tool arguments.
+-- Future structural changes require numbered .sqm migrations in this source directory.
+CREATE TABLE executionEntry (
+    id TEXT NOT NULL PRIMARY KEY,
+    runId TEXT NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    metadataJson TEXT NOT NULL
+);
+
+selectRecent:
+SELECT * FROM executionEntry ORDER BY updatedAt DESC;
+
+upsert:
+INSERT OR REPLACE INTO executionEntry(id, runId, updatedAt, metadataJson) VALUES (?, ?, ?, ?);
+
+deleteEntry:
+DELETE FROM executionEntry WHERE id = ?;

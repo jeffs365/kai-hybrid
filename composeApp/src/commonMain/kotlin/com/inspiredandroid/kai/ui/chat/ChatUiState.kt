@@ -69,6 +69,9 @@ data class ConversationSummary(
 @Immutable
 data class ChatUiState(
     val actions: ChatActions,
+    val agentActivity: com.inspiredandroid.kai.agent.AgentActivity? = null,
+    val agentApproval: com.inspiredandroid.kai.agent.AgentApproval? = null,
+    val speechStopGeneration: Int = 0,
     val history: ImmutableList<History> = persistentListOf(),
     val isSpeechOutputEnabled: Boolean = false,
     val isLoading: Boolean = false,

@@ -17,6 +17,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.StateFlow
 
 interface DataRepository {
+    val agentRuntime: com.inspiredandroid.kai.agent.AgentRuntime? get() = null
     val chatHistory: StateFlow<List<History>>
     val currentConversationId: StateFlow<String?>
     val fallbackStatus: StateFlow<FallbackStatus?>

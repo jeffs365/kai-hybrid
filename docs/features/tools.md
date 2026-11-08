@@ -1,8 +1,12 @@
 # Tools
 
-**Last verified:** 2026-10-23
+**Last verified:** 2026-11-08
 
 Kai's tools feature allows the AI to execute external functions during conversations — web search, notifications, calendar events, shell commands, memory operations, and more. Tools are defined with a schema, executed with safety guards, and managed through per-tool toggles in settings.
+
+## Safe agent mode in hybrid.8
+
+On Android, Settings → Agent offers an opt-in safe mode for DeepSeek. It replaces the model tool set with battery, phone status and flashlight only. Requests are validated locally, checked against enabled tools and the current user’s authorized target, and coordinated through one task lane. This mode has eight reasoning rounds and a 90-second total deadline; it does not execute inline tool markup. The legacy tool descriptions and limits below apply outside this opt-in mode. See [agent execution](agent-execution.md).
 
 ## Concepts
 
@@ -300,6 +304,8 @@ The interactive-mode top bar shows only the static title — loading is surfaced
 
 | File | Purpose |
 |---|---|
+| `agent/AgentToolRegistry.kt in common source` | Finite structured phone schemas and strict arguments |
+| `agent/AgentRuntime.kt in common source` | Opt-in bounded execution path |
 | `composeApp/src/commonMain/.../network/tools/Tool.kt` | Tool interface, ToolSchema, ParameterSchema |
 | `composeApp/src/commonMain/.../network/tools/ToolInfo.kt` | Display metadata for settings |
 | `composeApp/src/commonMain/.../data/ToolExecutor.kt` | Execution, JSON parsing, timeout, truncation |
@@ -347,4 +353,4 @@ The interactive-mode top bar shows only the static title — loading is surfaced
 
 ## Phone controls in Kai Hybrid
 
-Android exposes three independent switches under Tools: Phone battery, Phone status, and Phone flashlight. Direct current-user requests read live device data or change the flashlight with Android state confirmation. These app-managed controls run before inference and do not expose an arbitrary device-action interface to model output. See [phone controls](phone-controls.md).
+Android exposes three independent switches under Tools: Phone battery, Phone status, and Phone flashlight. Direct current-user requests read live device data or change the flashlight with Android state confirmation. The default path and slash commands run before inference. Opt-in DeepSeek safe mode instead offers three validated structured phone tools; it does not expose arbitrary device actions. See [phone controls](phone-controls.md).

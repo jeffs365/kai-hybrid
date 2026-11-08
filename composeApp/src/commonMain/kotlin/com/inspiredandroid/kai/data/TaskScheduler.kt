@@ -98,6 +98,8 @@ class TaskScheduler(
             while (isActive) {
                 delay(POLL_INTERVAL_MS.milliseconds)
                 if (!appSettings.isSchedulingEnabled()) continue
+                // Phase 1 safe mode has no background-agent authorization. Saved tasks stay pending.
+                if (dataRepository.agentRuntime?.supported == true && appSettings.getAgentPreferences().enabled) continue
 
                 val dueTasks = taskStore.getDueTasks()
                 for (task in dueTasks) {
@@ -147,10 +149,11 @@ class TaskScheduler(
      * Used by the scheduler loop's due-check and by [triggerHeartbeatNow] for user-pressed refresh.
      */
     private suspend fun runHeartbeat() {
+        if (dataRepository.agentRuntime?.supported == true && appSettings?.getAgentPreferences()?.enabled == true) return
         val manager = heartbeatManager ?: return
         val pendingEmails = emailStore?.getPending().orEmpty()
-        val pendingSms = smsStore?.getPending().orEmpty()
-        val pendingNotifications = notificationStore?.getPending().orEmpty()
+        val pendingSms = smsStore?.getPending().orEmpty().filter { smsStore?.cloudMessage(it) != null }
+        val pendingNotifications = notificationStore?.getPending().orEmpty().filter { notificationStore?.cloudRecord(it) != null }.sortedByDescending { it.postedAtEpochMs }.take(20)
         try {
             val recentResponses = dataRepository.savedConversations.value
                 .find { it.type == Conversation.TYPE_HEARTBEAT }

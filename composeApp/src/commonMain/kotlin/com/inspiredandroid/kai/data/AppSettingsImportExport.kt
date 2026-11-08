@@ -142,6 +142,9 @@ fun AppSettings.exportToJson(
     }
 
     if (ImportSection.TOOLS in sections) {
+        if (getAgentPreferences() != com.inspiredandroid.kai.agent.AgentPreferences()) {
+            map["safe_agent_preferences"] = Json.parseToJsonElement(Json.encodeToString(com.inspiredandroid.kai.agent.AgentPreferences.serializer(), getAgentPreferences()))
+        }
         val toolStates = mutableMapOf<String, JsonElement>()
         for (toolId in toolIds) {
             toolStates[toolId] = JsonPrimitive(isToolEnabled(toolId))
@@ -325,6 +328,7 @@ fun AppSettings.importFromJson(
 
     if (ImportSection.TOOLS in sections) {
         try {
+            setAgentPreferences(json["safe_agent_preferences"]?.let { SharedJson.decodeFromString<com.inspiredandroid.kai.agent.AgentPreferences>(it.toString()) } ?: com.inspiredandroid.kai.agent.AgentPreferences())
             for (toolId in toolIds) {
                 settings.remove("$KEY_TOOL_PREFIX$toolId")
             }
@@ -335,6 +339,7 @@ fun AppSettings.importFromJson(
             errors++
         }
     } else if (replace) {
+        setAgentPreferences(com.inspiredandroid.kai.agent.AgentPreferences())
         for (toolId in toolIds) {
             settings.remove("$KEY_TOOL_PREFIX$toolId")
         }

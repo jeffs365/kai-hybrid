@@ -43,14 +43,14 @@ actual class NotificationReader actual constructor() {
 
     actual suspend fun getById(id: String): NotificationRecord? {
         if (!hasAccess()) return null
-        return store.getStore().firstOrNull { it.id == id }
+        return store.getStore().asSequence().mapNotNull(store::cloudRecord).firstOrNull { it.id == id }
     }
 
     actual suspend fun search(query: String, limit: Int, packageName: String?): List<NotificationRecord> {
         if (!hasAccess()) return emptyList()
         if (query.isBlank()) return emptyList()
         val needle = query.lowercase()
-        return store.getStore()
+        return store.getStore().mapNotNull(store::cloudRecord)
             .asSequence()
             .filter { packageName == null || it.packageName == packageName }
             .filter {

@@ -4,11 +4,11 @@ Personal Android fork based on upstream Kai v3.3.0 (78bbb326). Apache-2.0 licens
 
 ## Saved baseline and future changes
 
-Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/local-deepseek-consultation`. The installed baseline is **3.3.0-hybrid.7**, tagged `v3.3.0-hybrid.7`. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
+Repository: [jeffs365/kai-hybrid](https://github.com/jeffs365/kai-hybrid). Development branch: `feature/kai9000-safe-agent-foundation`. Current work is **3.3.0-hybrid.8**, with the build and 327 tests passing; final phone validation is pending USB reconnection. The last fully validated checkpoint remains `v3.3.0-hybrid.7` on the earlier working branch. Earlier checkpoints remain tagged `v3.3.0-hybrid.4` (photos) and `v3.3.0-hybrid.5` (memory).
 
 Continue work from that branch. Read this file and the linked feature docs, make the change, run the relevant checks, then increment the Android hybrid version suffix and install the APK with `adb install -r`. Keep the same application ID and signing key to update the app while preserving its data. The upstream repository is available as the `upstream` remote for deliberate future merges.
 
-This repository backs up source code, feature notes, and the [validation record](docs/validation/3.3.0-hybrid.7.json). API keys, chat history, memory, and downloaded model weights remain in the app's storage on the phone; they are not backed up here. Built APKs are kept locally in `dist/` and ignored by Git.
+This repository backs up source code, feature notes, and the [validation record](docs/validation/3.3.0-hybrid.8.json). API keys, chat history, memory, and downloaded model weights remain in the app's storage on the phone; they are not backed up here. Built APKs are kept locally in `dist/` and ignored by Git.
 
 ## Build
 
@@ -31,6 +31,13 @@ Run `./gradlew spotlessCheck` separately from builds/tests, because the upstream
   --tests '*TaskStoreMigrationTest' \
   --tests '*SchedulingToolsTest' \
   --tests '*PhoneCommandsTest' \
+  --tests '*Agent*Test' \
+  --tests '*ApprovalGateTest' \
+  --tests '*EventPrivacyPolicyTest' \
+  --tests '*PermissionCancellationTest' \
+  --tests '*HeartbeatPromptBuilderTest' \
+  --tests '*ChatViewModel*Test' \
+  --tests '*SqlConversationPersistenceTest' \
   --tests '*ToolExecutorTest' \
   --tests '*LocalModelCatalogTest' \
   --tests '*BraveSearchToolTest' \
@@ -67,6 +74,12 @@ With Local Model selected, say “Remind me in 20 minutes to pay bills” or “
 ### Phone controls (hybrid.7)
 
 Ask “What's my battery level?”, “Phone status”, “Turn on the flashlight”, or “Turn off the flashlight”. Manual forms are /battery, /phone status, and /flashlight on, off, or status. The app reads current Android data and verifies torch state through camera-service callbacks, without a model or cloud call for the command. The flashlight asks for camera permission; this feature does not capture photos or video. Settings → Tools has independent Phone battery, Phone status, and Phone flashlight switches. See [phone controls](docs/features/phone-controls.md).
+
+### Safe execution and event privacy (hybrid.8)
+
+Settings → Agent adds Safe agent · DeepSeek, initially off. Its finite structured tools are battery, phone status and flashlight. Natural phone requests use DeepSeek while this mode is on; slash forms stay local/offline. Tasks have an active Stop control, bounded execution, metadata history and interrupted-state recovery. Legacy background AI jobs pause while it is on; direct reminders still deliver. Other providers retain their existing tool sets. See [agent execution](docs/features/agent-execution.md).
+
+Notification/SMS AI sharing now starts off, including upgrades. Explicitly enable sharing and save allowed app IDs/senders under Settings → Agent before legacy notification tools or heartbeat can receive eligible content. Known sensitive patterns are excluded locally and rechecked on reads. Existing private data is preserved; these changes do not undo prior sharing. Memory classification, accessibility/YouTube, voice input, Kokoro and wake word are later phases.
 
 ## Device validation
 

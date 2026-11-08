@@ -653,6 +653,7 @@ class Requests {
             parameters = OpenAICompatibleChatRequestDto.Parameters(
                 properties = propertySchemas(OpenAISchemaDialect),
                 required = requiredParameterNames(),
+                additionalProperties = if (schema.name in com.inspiredandroid.kai.agent.AgentToolRegistry.names) false else null,
             ),
         ),
     )

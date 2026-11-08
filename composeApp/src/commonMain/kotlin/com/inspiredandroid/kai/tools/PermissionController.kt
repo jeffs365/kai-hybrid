@@ -39,7 +39,11 @@ enum class AppPermission {
  * until the launcher set up by [SetupPermissionHandler] reports a result through
  * [onPermissionResult].
  */
-class PermissionController(internal val permission: AppPermission) {
+class PermissionController(
+    internal val permission: AppPermission,
+    private val permissionCheck: () -> Boolean = { platformHasPermission(permission) },
+    private val requestAvailable: () -> Boolean = { platformCanRequest(permission) },
+) {
     private val _permissionRequested = MutableStateFlow(false)
 
     /** Emits true when a permission request is pending and should be launched. */
@@ -48,7 +52,7 @@ class PermissionController(internal val permission: AppPermission) {
     private val permissionResultFlow = MutableStateFlow<Boolean?>(null)
 
     /** True if the permission is already granted, or not gated on this platform/OS version. */
-    fun hasPermission(): Boolean = platformHasPermission(permission)
+    fun hasPermission(): Boolean = permissionCheck()
 
     /**
      * Request the permission and suspend until the user responds.
@@ -58,17 +62,17 @@ class PermissionController(internal val permission: AppPermission) {
         if (hasPermission()) return true
         // Platforms without a launcher would otherwise sit out the full timeout below waiting for
         // a result that can never arrive.
-        if (!platformCanRequest(permission)) return false
+        if (!requestAvailable()) return false
 
         permissionResultFlow.value = null
         _permissionRequested.value = true
 
-        val result = withTimeoutOrNull(60.seconds) {
-            permissionResultFlow.first { it != null }
+        return try {
+            withTimeoutOrNull(60.seconds) { permissionResultFlow.first { it != null } } ?: false
+        } finally {
+            _permissionRequested.value = false
+            permissionResultFlow.value = null
         }
-
-        _permissionRequested.value = false
-        return result ?: false
     }
 
     /** Called from Compose when the permission result is received. */

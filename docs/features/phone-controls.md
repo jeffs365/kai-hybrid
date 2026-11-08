@@ -1,8 +1,12 @@
 # Phone controls
 
-**Last verified:** 2026-10-23
+**Last verified:** 2026-11-08
 
-Kai Hybrid on Android can read live phone status and control the rear flashlight. Direct text requests are handled by the app before model inference, Brave search, or DeepSeek consultation. They work while Local Model is selected and also when a cloud provider is selected, without making a cloud request for the command.
+Kai Hybrid on Android can read live phone status and control the rear flashlight. By default, direct text requests are handled by the app before model inference, Brave search or DeepSeek consultation. Opt-in DeepSeek safe mode changes ordinary phone requests to structured cloud calls. Slash commands remain local under any selected provider and do not make an API request.
+
+## Shared execution in hybrid.8
+
+All direct phone commands now use a common authorization and execution record. Slash forms remain local without an API call. With DeepSeek safe mode enabled, ordinary text-only phone requests use structured cloud tool calls and show a DeepSeek agent label with Android observations. On/off requests still need an explicit, immediate target recognized by the app. Ambiguous requests cannot authorize a write. Changes require Kai to remain visible on an unlocked screen; timestamps identify the observed state. If the cloud is unavailable, use /battery, /phone status, /flashlight on, /flashlight off or /flashlight status. Other platforms retain their existing behavior.
 
 ## Battery and phone status
 
@@ -32,6 +36,8 @@ These are app-managed controls. They are not arbitrary Android automation, root 
 
 | File | Purpose |
 |---|---|
+| `agent/AgentRuntime.kt in common source` | Shared direct/native execution and metadata history |
+| `agent/ToolPolicy.kt in common source` | Explicit current-user authorization and foreground checks |
 | PhoneControls.kt in common data | Platform contract and structured device readings |
 | PhoneCommands.kt in common data | Whole-message command parsing, tool gates, and measured responses |
 | PhoneControls.android.kt in Android data | Battery, memory, storage, network, and camera-service torch integration |

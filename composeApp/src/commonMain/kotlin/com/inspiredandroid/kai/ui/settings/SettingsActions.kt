@@ -71,6 +71,9 @@ data class SettingsActions(
     val onPrepareExport: () -> Map<ImportSection, String?>,
     val onImportSettings: (ByteArray, Set<ImportSection>, Boolean) -> ImportResult,
     val onUndoDelete: () -> Unit,
+    val onUpdateAgentPreferences: (com.inspiredandroid.kai.agent.AgentPreferences) -> Unit = {},
+    val onClearAgentHistory: () -> Unit = {},
+    val onDeleteAgentEntry: (String) -> Unit = {},
 ) {
     companion object {
         val NoOp = SettingsActions(

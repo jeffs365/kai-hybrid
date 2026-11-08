@@ -574,6 +574,15 @@ private fun ChatModeScreen(
                 navigationTabBar = navigationTabBar,
             )
 
+            LaunchedEffect(uiState.speechStopGeneration) {
+                if (uiState.speechStopGeneration > 0) {
+                    try {
+                        textToSpeech?.stop()
+                    } catch (_: Exception) { }
+                }
+            }
+            AgentStatusBanner(uiState.agentActivity, uiState.agentApproval, uiState.actions.cancel, uiState.actions.respondAgentApproval)
+
             HeartbeatBanner(
                 visible = uiState.hasUnreadHeartbeat,
                 onTap = {

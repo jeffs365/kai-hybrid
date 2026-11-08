@@ -77,6 +77,9 @@ class SettingsViewModel(
     private var pendingDeleteJob: Job? = null
 
     private fun buildFullState(): SettingsUiState = SettingsUiState(
+        agentSupported = dataRepository.agentRuntime?.supported == true,
+        agentPreferences = dataRepository.agentRuntime?.preferences?.value ?: com.inspiredandroid.kai.agent.AgentPreferences(),
+        agentHistory = dataRepository.agentRuntime?.store?.entries?.value.orEmpty().toImmutableList(),
         configuredServices = buildConfiguredServiceEntries().toImmutableList(),
         availableServicesToAdd = computeAvailableServices().toImmutableList(),
         tools = dataRepository.getToolDefinitions().toImmutableList(),
@@ -203,6 +206,9 @@ class SettingsViewModel(
         onPrepareExport = ::onPrepareExport,
         onImportSettings = ::onImportSettings,
         onUndoDelete = ::onUndoDelete,
+        onUpdateAgentPreferences = { value -> viewModelScope.launch(backgroundDispatcher) { dataRepository.agentRuntime?.updatePreferences(value) } },
+        onClearAgentHistory = { viewModelScope.launch(backgroundDispatcher) { dataRepository.agentRuntime?.store?.clearCompleted() } },
+        onDeleteAgentEntry = { id -> viewModelScope.launch(backgroundDispatcher) { dataRepository.agentRuntime?.store?.delete(id) } },
     )
 
     private val _state = MutableStateFlow(buildFullState())
@@ -1192,6 +1198,12 @@ class SettingsViewModel(
                 }
                 updateConnectionStatus(instanceId, status)
             }
+        }
+    }
+    init {
+        dataRepository.agentRuntime?.let { runtime ->
+            viewModelScope.launch { runtime.preferences.collect { value -> _state.update { it.copy(agentPreferences = value) } } }
+            viewModelScope.launch { runtime.store.entries.collect { value -> _state.update { it.copy(agentHistory = value.toImmutableList()) } } }
         }
     }
 }

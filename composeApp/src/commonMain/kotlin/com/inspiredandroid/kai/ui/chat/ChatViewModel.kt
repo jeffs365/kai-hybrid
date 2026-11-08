@@ -78,8 +78,11 @@ class ChatViewModel(
         sendSmsDraft = ::sendSmsDraft,
         discardSmsDraft = ::discardSmsDraft,
         consumeComposerPrefill = ::consumeComposerPrefill,
+        respondAgentApproval = { id, allow -> dataRepository.agentRuntime?.approvals?.respond(id, allow) },
     )
     private val freeModeNames: Map<FreeMode, String> = FreeMode.entries.associateWith { "Free ${it.modelId.replaceFirstChar { c -> c.uppercase() }}" }
+
+    @kotlin.concurrent.Volatile
     private var currentJob: Job? = null
     private var pendingConversationDeleteJob: Job? = null
     private val _state = MutableStateFlow(
@@ -208,6 +211,10 @@ class ChatViewModel(
     }
 
     private fun ask(question: String?) {
+        if (question?.trim()?.lowercase() in setOf("stop", "/stop")) {
+            cancel()
+            return
+        }
         askInternal(question, null)
     }
 
@@ -245,7 +252,7 @@ class ChatViewModel(
                 dataRepository.ask(strippedQuestion, files, uiSubmission, activeSkillId)
 
                 // Auto-retry in interactive mode if the response has no valid kai-ui
-                if (_state.value.isInteractiveMode) {
+                if (_state.value.isInteractiveMode && dataRepository.agentRuntime?.preferences?.value?.enabled != true) {
                     retryIfNoValidKaiUi()
                 }
 
@@ -254,7 +261,12 @@ class ChatViewModel(
                 }
             } catch (exception: Exception) {
                 // CancellationException must be re-thrown to properly propagate coroutine cancellation
-                if (exception is CancellationException) throw exception
+                if (exception is CancellationException) {
+                    if (currentJob == kotlinx.coroutines.currentCoroutineContext()[Job]) {
+                        _state.update { it.copy(isLoading = false, isSpeaking = false, speechStopGeneration = it.speechStopGeneration + 1) }
+                    }
+                    throw exception
+                }
 
                 val showUpsell = shouldShowFreeProviderSuggestions(
                     noConfiguredServices = dataRepository.getConfiguredServiceInstances().isEmpty(),
@@ -384,10 +396,11 @@ class ChatViewModel(
     }
 
     private fun cancel() {
+        dataRepository.agentRuntime?.stop()
         currentJob?.cancel()
         currentJob = null
         _state.update {
-            it.copy(isLoading = false)
+            it.copy(isLoading = false, isSpeaking = false, speechStopGeneration = it.speechStopGeneration + 1)
         }
     }
 
@@ -604,5 +617,11 @@ class ChatViewModel(
         }
         dataRepository.setInteractiveMode(isInteractive)
         _state.update { it.copy(isInteractiveMode = isInteractive) }
+    }
+    init {
+        dataRepository.agentRuntime?.let { runtime ->
+            viewModelScope.launch { runtime.active.collect { value -> _state.update { it.copy(agentActivity = value) } } }
+            viewModelScope.launch { runtime.approvals.pending.collect { value -> _state.update { it.copy(agentApproval = value) } } }
+        }
     }
 }

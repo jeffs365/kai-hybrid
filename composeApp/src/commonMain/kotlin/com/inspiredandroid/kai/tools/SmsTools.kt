@@ -55,16 +55,17 @@ object SmsTools {
                     "error" to "SMS permission not granted. Ask the user to enable SMS in Settings.",
                 )
             }
-            val pending = smsStore.getPending()
+            val pending = smsStore.getPending().mapNotNull(smsStore::cloudMessage)
             return mapOf(
                 "success" to true,
                 "count" to pending.size,
                 "messages" to pending.map(::summary),
+                "privacy_notice" to "AI sharing requires consent and allowed senders; sensitive content is excluded.",
             )
         }
     }
 
-    fun readSmsTool(smsReader: SmsReader) = object : Tool {
+    fun readSmsTool(smsReader: SmsReader, privacySettings: com.inspiredandroid.kai.data.AppSettings? = null) = object : Tool {
         override val schema = ToolSchema(
             name = "read_sms",
             description = "Read the full body of a specific SMS by its id. Use check_sms or search_sms first to find an id.",
@@ -82,8 +83,9 @@ object SmsTools {
             }
             val id = (args["id"] as? Number)?.toLong()
                 ?: return mapOf("success" to false, "error" to "Missing id")
-            val msg = smsReader.readById(id)
-                ?: return mapOf("success" to false, "error" to "No SMS found with id $id")
+            val msg = smsReader.readById(id)?.let {
+                com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudSms(it, privacySettings?.getAgentPreferences() ?: com.inspiredandroid.kai.agent.AgentPreferences())
+            } ?: return mapOf("success" to false, "error" to "SMS unavailable or excluded by event privacy settings")
             return mapOf(
                 "success" to true,
                 "id" to msg.id,
@@ -95,7 +97,7 @@ object SmsTools {
         }
     }
 
-    fun searchSmsTool(smsReader: SmsReader) = object : Tool {
+    fun searchSmsTool(smsReader: SmsReader, privacySettings: com.inspiredandroid.kai.data.AppSettings? = null) = object : Tool {
         override val schema = ToolSchema(
             name = "search_sms",
             description = "Search SMS messages by sender (phone number) or body text. Returns newest-first, up to 20 matches.",
@@ -115,7 +117,9 @@ object SmsTools {
             if (query.isNullOrBlank()) {
                 return mapOf("success" to false, "error" to "Missing query")
             }
-            val matches = smsReader.search(query, SEARCH_LIMIT)
+            val matches = smsReader.search(query, SEARCH_LIMIT).mapNotNull {
+                com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudSms(it, privacySettings?.getAgentPreferences() ?: com.inspiredandroid.kai.agent.AgentPreferences())
+            }
             return mapOf(
                 "success" to true,
                 "count" to matches.size,
@@ -173,10 +177,10 @@ object SmsTools {
     val smsSendToolDefinitions = listOf(sendSmsToolInfo, replySmsToolInfo)
     val smsToolDefinitions = smsReadToolDefinitions + smsSendToolDefinitions
 
-    fun getSmsReadTools(smsStore: SmsStore, smsReader: SmsReader): List<Tool> = listOf(
+    fun getSmsReadTools(smsStore: SmsStore, smsReader: SmsReader, privacySettings: com.inspiredandroid.kai.data.AppSettings? = null): List<Tool> = listOf(
         checkSmsTool(smsStore, smsReader),
-        readSmsTool(smsReader),
-        searchSmsTool(smsReader),
+        readSmsTool(smsReader, privacySettings),
+        searchSmsTool(smsReader, privacySettings),
     )
 
     @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
@@ -222,7 +226,7 @@ object SmsTools {
     }
 
     @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
-    fun replySmsTool(smsDraftStore: SmsDraftStore, smsReader: SmsReader, smsSender: SmsSender) = object : Tool {
+    fun replySmsTool(smsDraftStore: SmsDraftStore, smsReader: SmsReader, smsSender: SmsSender, privacySettings: com.inspiredandroid.kai.data.AppSettings? = null) = object : Tool {
         override val schema = ToolSchema(
             name = "reply_sms",
             description = "Draft a reply to a received SMS. Looks up the original by id to pick the sender, then stages a draft " +
@@ -245,8 +249,9 @@ object SmsTools {
             val body = args["body"]?.toString()
             if (body.isNullOrEmpty()) return mapOf("success" to false, "error" to "Missing body")
 
-            val original = smsReader.readById(smsId)
-                ?: return mapOf("success" to false, "error" to "No SMS found with id $smsId")
+            val original = smsReader.readById(smsId)?.let {
+                com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudSms(it, privacySettings?.getAgentPreferences() ?: com.inspiredandroid.kai.agent.AgentPreferences())
+            } ?: return mapOf("success" to false, "error" to "SMS unavailable or excluded by event privacy settings")
             if (original.address.isBlank()) {
                 return mapOf("success" to false, "error" to "Original SMS has no sender address to reply to")
             }
@@ -274,9 +279,10 @@ object SmsTools {
         smsDraftStore: SmsDraftStore,
         smsReader: SmsReader,
         smsSender: SmsSender,
+        privacySettings: com.inspiredandroid.kai.data.AppSettings? = null,
     ): List<Tool> = listOf(
         sendSmsTool(smsDraftStore, smsSender),
-        replySmsTool(smsDraftStore, smsReader, smsSender),
+        replySmsTool(smsDraftStore, smsReader, smsSender, privacySettings),
     )
 
     private const val SEARCH_LIMIT = 20

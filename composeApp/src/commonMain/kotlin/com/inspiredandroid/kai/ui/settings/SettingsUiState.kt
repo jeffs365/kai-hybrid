@@ -63,6 +63,9 @@ enum class SettingsTab {
 @Immutable
 data class SettingsUiState(
     val currentTab: SettingsTab = SettingsTab.Services,
+    val agentSupported: Boolean = false,
+    val agentPreferences: com.inspiredandroid.kai.agent.AgentPreferences = com.inspiredandroid.kai.agent.AgentPreferences(),
+    val agentHistory: ImmutableList<com.inspiredandroid.kai.agent.ExecutionEntry> = persistentListOf(),
     val configuredServices: ImmutableList<ConfiguredServiceEntry> = persistentListOf(),
     val expandedServiceId: String? = null,
     val availableServicesToAdd: ImmutableList<Service> = persistentListOf(),

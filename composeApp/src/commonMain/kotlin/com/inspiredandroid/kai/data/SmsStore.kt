@@ -2,7 +2,7 @@ package com.inspiredandroid.kai.data
 
 import kotlinx.serialization.serializer
 
-class SmsStore(appSettings: AppSettings) {
+class SmsStore(private val appSettings: AppSettings) {
 
     private val syncState = SettingsJsonValue(
         read = appSettings::getSmsSyncStateJson,
@@ -25,7 +25,9 @@ class SmsStore(appSettings: AppSettings) {
 
     fun getPending(): List<SmsMessage> = pendingQueue.get()
 
-    suspend fun addPending(messages: List<SmsMessage>) = pendingQueue.add(messages)
+    fun cloudMessage(message: SmsMessage): SmsMessage? = com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudSms(message, appSettings.getAgentPreferences())
+
+    suspend fun addPending(messages: List<SmsMessage>) = pendingQueue.add(messages.mapNotNull(com.inspiredandroid.kai.events.EventPrivacyPolicy::sms))
 
     suspend fun removePending(messages: List<SmsMessage>) = pendingQueue.remove(messages)
 }

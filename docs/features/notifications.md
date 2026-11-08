@@ -1,12 +1,16 @@
 # Notifications
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-11-08
 
-> Reading notifications is **FOSS-only** and **Android-only**. The Play Store variant of Kai does not declare `BIND_NOTIFICATION_LISTENER_SERVICE` and the feature is invisible there — no settings, no tools, no code path. Play Store's notification-access policies restrict the listener to a narrow set of approved use cases (accessibility, smartwatches, replacement notification UIs), which Kai is not.
+> Reading notifications is **FOSS-only** and **Android-only** in the current packaging. The Play Store variant does not declare the listener service and hides this feature. Any future distribution change needs its own policy review.
 
 Kai on the FOSS Android build can **read** notifications posted by other apps and surface them to the AI, mirroring the SMS feature: per-app opt-in, capped pending queue, heartbeat summary, plus on-demand `check_notifications` / `read_notification` / `search_notifications` tools.
 
 There is no "send" counterpart in v1. Acting on a notification (replying via `RemoteInput`, dismissing) is out of scope for the first cut and would follow the SMS-send draft pattern when added.
+
+## Privacy containment in hybrid.8
+
+Notification access and the existing capture switch remain separate from AI sharing. New events are checked locally before storage for known OTP, authentication, password and financial-secret patterns and sensitive source names. Repeated updates are deduplicated; newer changed content survives removal of an older pending snapshot. Cloud notification tools and heartbeat are off by default for event content: enable sharing and explicitly list allowed app IDs under Settings → Agent. Older stored records are checked again before egress. Unlisted eligible content can remain local; prior data is not silently erased. These conservative rules do not guarantee detection of every possible secret. Safe agent mode pauses background AI jobs, while existing direct reminders continue to deliver.
 
 ## Availability
 
@@ -19,7 +23,7 @@ The FOSS gate is purely manifest-based: the `foss` product flavor contributes `a
 ## Scope
 
 - **Read**: list / read / search notifications posted to the system tray since the listener was bound.
-- **Per-app filtering is delegated to the OS.** System Notification Access already exposes an "Apps" picker per listener — if the user unchecks an app there, `onNotificationPosted` is never fired for that package. We don't duplicate that UI in Kai; the in-app toggle is just a master switch for the whole feature.
+- **Capture follows Android’s app selection.** Kai also has an independent source allowlist and consent for AI sharing, which is separate from local capture.
 - **Master switch pauses capture.** While the in-app toggle is off, posts are dropped even if system access is still granted.
 - **Visible notifications only.** Ongoing and foreground-service notifications (media controls, downloads, navigation) are filtered out via `FLAG_ONGOING_EVENT` and `FLAG_FOREGROUND_SERVICE` — they are sticky UI affordances, not events. Posts with a blank title and blank text are also dropped at capture.
 - **No reply, no dismiss, no action invocation in v1.** The listener is read-only.
@@ -123,6 +127,8 @@ There is **no poll interval slider** — the listener is push-driven.
 
 | File | Purpose |
 |---|---|
+| `events/EventPrivacyPolicy.kt in common source` | Local exclusions and AI-sharing rules |
+| `ui/settings/AgentExecutionSettings.kt in common source` | Separate source consent and allowlists |
 | `androidApp/src/foss/AndroidManifest.xml` | Declares `BIND_NOTIFICATION_LISTENER_SERVICE` and registers `KaiNotificationListenerService` in the FOSS flavor only |
 | `composeApp/src/commonMain/.../data/NotificationModels.kt` | `NotificationRecord`, `NotificationSyncState` data classes |
 | `composeApp/src/commonMain/.../data/NotificationStore.kt` | Pending queue + broader store + retention sweeps |
@@ -146,5 +152,5 @@ There is **no poll interval slider** — the listener is push-driven.
 
 - **`reply_notification` tool.** Inspect the captured `Notification.actions` for a `RemoteInput`-bearing reply action; if present, expose a draft tool that mirrors `reply_sms` (banner-gated send). Useful for messaging apps.
 - **`dismiss_notification` tool.** Call `NotificationListenerService.cancelNotification(key)`. Low-friction so could ship behind a separate "Allow dismissing" toggle.
-- **OTP redaction.** Auto-detect 4–8 digit OTP-style codes in capture and elide them from the heartbeat prompt by default; let the AI request the full body via `read_notification` only when it's clearly a non-sensitive context.
+- **Broader privacy detection.** Extend local filters and synthetic fixtures for additional languages and credential formats. Excluded bodies must remain unavailable to AI tools.
 - **Per-channel filtering.** Within an allowed app, let the user pick which `NotificationChannel` IDs to capture (e.g. allow Slack mentions, drop Slack reactions).

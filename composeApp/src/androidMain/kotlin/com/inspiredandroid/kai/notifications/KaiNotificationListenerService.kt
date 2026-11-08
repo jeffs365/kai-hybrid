@@ -105,8 +105,7 @@ class KaiNotificationListenerService : NotificationListenerService() {
         )
 
         scope.launch {
-            store.addRecord(record)
-            store.addPending(record)
+            store.capture(record)
         }
     }
 

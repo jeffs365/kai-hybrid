@@ -106,7 +106,7 @@ class HeartbeatManager(
         }
         val smsEnabled = appSettings.isSmsEnabled()
         val heartbeatSms: List<HeartbeatPendingSms> = if (smsEnabled) {
-            pendingSms.map { msg ->
+            pendingSms.mapNotNull { com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudSms(it, appSettings.getAgentPreferences()) }.map { msg ->
                 HeartbeatPendingSms(
                     id = msg.id,
                     from = msg.address,
@@ -122,6 +122,7 @@ class HeartbeatManager(
         // subsequent heartbeats (or via `check_notifications` on demand).
         val heartbeatNotifications: List<HeartbeatPendingNotification> = if (notificationsEnabled) {
             pendingNotifications
+                .mapNotNull { com.inspiredandroid.kai.events.EventPrivacyPolicy.cloudNotification(it, appSettings.getAgentPreferences()) }
                 .sortedByDescending { it.postedAtEpochMs }
                 .take(MAX_NOTIFICATIONS_IN_PROMPT)
                 .map { record ->
@@ -146,7 +147,8 @@ class HeartbeatManager(
         return buildHeartbeatPrompt(
             customOrDefaultPrompt = customPrompt.ifEmpty { DEFAULT_HEARTBEAT_PROMPT },
             heartbeatAdditions = heartbeatAdditions,
-            recentResponses = recentResponses,
+            // Mixed legacy summaries cannot be rechecked against per-source sharing consent.
+            recentResponses = emptyList(),
             pendingTasks = pendingTasks,
             emailAccounts = emailAccounts,
             pendingEmails = heartbeatPending,

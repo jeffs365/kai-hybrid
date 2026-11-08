@@ -52,6 +52,7 @@ class SmsPoller(
             }
             smsStore.updateSyncState(updated)
         } catch (e: Exception) {
+            if (e is kotlinx.coroutines.CancellationException) throw e
             smsStore.updateSyncState(
                 syncState.copy(
                     lastAttemptEpochMs = attemptAt,

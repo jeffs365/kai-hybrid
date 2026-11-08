@@ -82,6 +82,8 @@ val appModule = module {
     }
     single<ReminderDelivery> { createReminderDelivery(get(), get()) }
     single<PhoneControls> { createPhoneControls() }
+    single<com.inspiredandroid.kai.agent.AgentExecutionStore> { com.inspiredandroid.kai.agent.createAgentExecutionStore() }
+    single<com.inspiredandroid.kai.agent.AgentRuntime> { com.inspiredandroid.kai.agent.AgentRuntime(get(), get(), get()) }
     single<EmailStore> {
         EmailStore(get())
     }
@@ -141,6 +143,7 @@ val appModule = module {
             localInferenceEngine = createLocalInferenceEngine(),
             reminderDelivery = get(),
             phoneControls = get(),
+            agentRuntime = get(),
         )
     }
     single<DataRepository> { get<RemoteDataRepository>() }

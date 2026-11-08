@@ -269,7 +269,7 @@ actual fun getAvailableTools(): List<Tool> {
         }
         if (smsReaderForTools != null && appSettings.isSmsEnabled() && smsReaderForTools.hasPermission()) {
             val smsStore: SmsStore by inject(SmsStore::class.java)
-            addAll(SmsTools.getSmsReadTools(smsStore, smsReaderForTools))
+            addAll(SmsTools.getSmsReadTools(smsStore, smsReaderForTools, appSettings))
         }
 
         // SMS send tools: independently gated on the Send toggle + SEND_SMS permission.
@@ -278,7 +278,7 @@ actual fun getAvailableTools(): List<Tool> {
             val smsSender: SmsSender by inject(SmsSender::class.java)
             if (smsSender.hasPermission()) {
                 val smsDraftStore: SmsDraftStore by inject(SmsDraftStore::class.java)
-                addAll(SmsTools.getSmsSendTools(smsDraftStore, smsReaderForTools, smsSender))
+                addAll(SmsTools.getSmsSendTools(smsDraftStore, smsReaderForTools, smsSender, appSettings))
             }
         }
 

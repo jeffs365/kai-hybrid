@@ -30,6 +30,9 @@ actual fun createPhoneControls(): PhoneControls = AndroidPhoneControls(get(Conte
 private class AndroidPhoneControls(private val context: Context) : PhoneControls {
     override val supported: Boolean = true
     private val flashlightMutex = Mutex()
+    override fun canMutate(): Boolean = context.getSystemService(PowerManager::class.java).isInteractive &&
+        !context.getSystemService(android.app.KeyguardManager::class.java).isDeviceLocked &&
+        androidx.lifecycle.ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)
 
     override suspend fun battery(): BatterySnapshot? {
         val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) ?: return null
@@ -94,6 +97,7 @@ private class AndroidPhoneControls(private val context: Context) : PhoneControls
     }
 
     override suspend fun flashlight(enabled: Boolean?): FlashlightResult = flashlightMutex.withLock {
+        if (enabled != null && !canMutate()) return@withLock FlashlightResult(FlashlightState.UNAVAILABLE, "Open Kai on the unlocked phone before changing the flashlight.")
         val permission = get<PermissionController>(PermissionController::class.java, permissionQualifier(AppPermission.CAMERA))
         if (!permission.requestPermission()) return@withLock FlashlightResult(FlashlightState.UNAVAILABLE, "Camera permission is needed to control the flashlight. Allow it for Kai Hybrid in Android Settings → Apps → Kai Hybrid → Permissions, then try again.")
         val manager = context.getSystemService(CameraManager::class.java)
@@ -121,6 +125,7 @@ private class AndroidPhoneControls(private val context: Context) : PhoneControls
             if (enabled == null || initial == FlashlightState.UNAVAILABLE) return@withLock FlashlightResult(initial)
             val desired = if (enabled) FlashlightState.ON else FlashlightState.OFF
             if (initial == desired) return@withLock FlashlightResult(initial)
+            if (!canMutate()) return@withLock FlashlightResult(FlashlightState.UNAVAILABLE, "Phone control paused because Kai is no longer visible on an unlocked screen.")
             manager.setTorchMode(id, enabled)
             val confirmed = withTimeoutOrNull(3_000) {
                 var state = states.receive()

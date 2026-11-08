@@ -47,11 +47,12 @@ object NotificationTools {
                         "system Notification access settings.",
                 )
             }
-            val pending = store.getPending()
+            val pending = store.getPending().mapNotNull(store::cloudRecord)
             return mapOf(
                 "success" to true,
                 "count" to pending.size,
                 "notifications" to pending.map(::summary),
+                "privacy_notice" to "AI sharing requires consent and allowed app IDs; sensitive content is excluded.",
             )
         }
     }

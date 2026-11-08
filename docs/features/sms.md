@@ -1,10 +1,14 @@
 # SMS
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-11-08
 
 > SMS is **FOSS-only** and **Android-only**. The Play Store variant of Kai does not declare `READ_SMS` or `SEND_SMS` and the feature is invisible there — no settings, no tools, no code path. Play Store's SMS/Call Log Permissions policy restricts both permissions to default SMS handlers, which Kai is not.
 
 Kai on the FOSS Android build can **read** incoming SMS messages and **draft** outgoing SMS for the user to review and send. Read and Send are independent user opt-ins: the user can let Kai read SMS without also letting it send, and vice versa. Sending is always gated by an explicit user tap in a review banner — the AI never sends directly.
+
+## Privacy containment in hybrid.8
+
+New pending SMS are checked locally for known sensitive patterns before persistence. Reading/searching SMS through AI tools, looking up an SMS for a reply draft, and including SMS in heartbeat require separate AI-sharing consent and an explicit sender allowlist in Settings → Agent. Sharing starts off, including on upgrades. Existing records are checked before egress. Sender matching ignores letter case and surrounding whitespace; phone-number formatting otherwise needs to match. SMS draft review remains mandatory and no sending capability was added. Safe agent mode pauses background AI jobs; it does not silently send or reply to messages.
 
 ## Availability
 
@@ -111,6 +115,7 @@ The SMS section appears in **Settings → Agent** only on the FOSS build. It con
 
 | File | Purpose |
 |---|---|
+| `events/EventPrivacyPolicy.kt in common source` | Sensitive content and sender consent before AI egress |
 | `androidApp/src/foss/AndroidManifest.xml` | Declares `READ_SMS` and `SEND_SMS` in the FOSS flavor only |
 | `composeApp/src/commonMain/.../data/SmsModels.kt` | `SmsMessage`, `SmsSyncState`, `SmsDraft`, `SmsDraftStatus` data classes |
 | `composeApp/src/commonMain/.../data/SmsStore.kt` | Pending inbox queue + sync state persistence |

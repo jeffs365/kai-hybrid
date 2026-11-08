@@ -1,10 +1,14 @@
 # Heartbeat
 
-**Last verified:** 2026-10-02
+**Last verified:** 2026-11-08
 
 > Heartbeat is user-controlled (on/off toggle, interval, active hours live in the settings UI). The AI cannot enable, disable, or reschedule it. To customise *what happens on each heartbeat*, the AI creates heartbeat-triggered scheduled tasks via `schedule_task` with `on_heartbeat: true` — these are `HEARTBEAT`-trigger tasks (see [tasks.md](tasks.md)) and their prompts are appended to every heartbeat run under `## Heartbeat Additions`. Each addition is a first-class task the user can see, edit, and cancel.
 
 Kai's heartbeat feature enables periodic automatic self-checks. The AI reviews pending tasks, email status, newly arrived emails, and learned memories on a configurable interval, surfacing anything that needs attention without requiring user interaction.
+
+## Privacy and safe mode in hybrid.8
+
+Only notification/SMS sources explicitly permitted for AI sharing can enter new heartbeat prompts. Known sensitive content is excluded again before prompt construction. Pending snapshots are removed only when the same version was sent; newer updates remain queued, and only the capped notification snapshot is consumed. While Android safe agent mode is on, legacy background AI jobs and manual heartbeat execution pause. Saved tasks remain pending, and direct Android reminders still deliver independently. Turning safe mode off resumes the legacy scheduler subject to its existing permissions, intervals and Android lifecycle limits.
 
 ## Concepts
 
@@ -118,6 +122,7 @@ Standing additions to heartbeat behaviour are created with `schedule_task(on_hea
 
 | File | Purpose |
 |---|---|
+| `events/EventPrivacyPolicy.kt in common source` | Per-source notification/SMS cloud eligibility |
 | `composeApp/src/commonMain/.../data/HeartbeatManager.kt` | Config, log management, wrapper that gathers inputs for the pure prompt builder |
 | `composeApp/src/commonMain/.../data/SettingsJson.kt` | Shared settings-backed JSON persistence: decode-or-default, encode-and-write, locked read-modify-write |
 | `composeApp/src/commonMain/.../data/HeartbeatPromptBuilder.kt` | Pure heartbeat prompt assembly (sections, caps) |
